@@ -118,6 +118,54 @@ export const mouseY = signal(() => _mouseY);
 export const mousex = signal(() => _mouseX);
 export const mouseX = signal(() => _mouseX);
 
+/**
+ *  The accelerometer's x-axis value ranges from 0 to 1.
+ * @name accX
+ * @return {Pattern}
+ * @example
+ * n(accX.segment(4).range(0,7)).scale("C:minor")
+ *
+ */
+
+/**
+ *  The accelerometer's y-axis value ranges from 0 to 1.
+ * @name accY
+ * @return {Pattern}
+ * @example
+ * n(accY.segment(4).range(0,7)).scale("C:minor")
+ *
+ */
+
+/**
+ *  The accelerometer's z-axis value ranges from 0 to 1.
+ * @name accZ
+ * @return {Pattern}
+ * @example
+ * n(accZ.segment(4).range(0,7)).scale("C:minor")
+ *
+ */
+
+let _accX = 0, _accY = 0, _accZ = 0;
+
+// Check if DeviceMotionEvent is supported
+if (typeof window !== 'undefined' && window.DeviceMotionEvent) {
+  window.addEventListener('devicemotion', (event) => {
+    // Normalizing accelerometer values to a 0-1 range
+    console.log(event.accelerationIncludingGravity);
+    _accX = (event.accelerationIncludingGravity.x + 10) / 20;  // Range: 0 to 1
+    _accY = (event.accelerationIncludingGravity.y + 10) / 20;  // Range: 0 to 1
+    _accZ = (event.accelerationIncludingGravity.z + 10) / 20;  // Range: 0 to 1
+  });
+}
+
+// Define signals for the accelerometer values
+export const accX = signal(() => _accX);
+export const accY = signal(() => _accY);
+export const accZ = signal(() => _accZ);
+
+
+
+
 // random signals
 
 const xorwise = (x) => {

@@ -145,6 +145,33 @@ export const mouseX = signal(() => _mouseX);
  *
  */
 
+/**
+ *  The device's rotation around the alpha-axis value ranges from 0 to 1.
+ * @name rotationAlpha
+ * @return {Pattern}
+ * @example
+ * n(rotationAlpha.segment(4).range(0,7)).scale("C:minor")
+ *
+ */
+
+/**
+ *  The device's rotation around the beta-axis value ranges from 0 to 1.
+ * @name rotationBeta
+ * @return {Pattern}
+ * @example
+ * n(rotationBeta.segment(4).range(0,7)).scale("C:minor")
+ *
+ */
+
+/**
+ *  The device's rotation around the gamma-axis value ranges from 0 to 1.
+ * @name rotationGamma
+ * @return {Pattern}
+ * @example
+ * n(rotationGamma.segment(4).range(0,7)).scale("C:minor")
+ *
+ */
+
 let _accelerationX = 0, _accelerationY = 0, _accelerationZ = 0;
 let _rotationAlpha = 0, _rotationBeta = 0, _rotationGamma = 0;
 //TODO: add support for rotationX, rotationY, rotationZ using DeviceOrientationEvent
@@ -195,12 +222,12 @@ if (typeof window !== 'undefined' && window.DeviceMotionEvent) {
   requestDeviceOrientationEventPermission();
   // listen to mobile sensors
   window.addEventListener('devicemotion', (event) => {
-    // Normalizing accelerometer values to a 0-1 range
+    // Normalizing devicemotion values to a 0-1 range, sort of
     _accelerationX = (event.accelerationIncludingGravity.x + 10) / 20;  // Range: 0 to 1
     _accelerationY = (event.accelerationIncludingGravity.y + 10) / 20;  // Range: 0 to 1
     _accelerationZ = (event.accelerationIncludingGravity.z + 10) / 20;  // Range: 0 to 1
     _rotationAlpha = (event.rotationRate.alpha + Math.PI) / (Math.PI * 2);  // Range: 0 to 1
-    _rotationBeta = (event.rotationRate.beta + Math.PI) / (Math.PI * 2);  // Range: 0 to 1
+    _rotationBeta  = (event.rotationRate.beta + Math.PI)  / (Math.PI * 2);    // Range: 0 to 1
     _rotationGamma = (event.rotationRate.gamma + Math.PI) / (Math.PI * 2);  // Range: 0 to 1
   
   });
@@ -222,7 +249,7 @@ export const rotB = rotationBeta;
 export const rotG = rotationGamma;
 
 
-// // Light Sensor (Ambient Light Sensor API)
+// // Light Sensor (Ambient Light Sensor API, not currently supported by iOS Safari)
 // /**
 //  *  The ambient light level ranges from 0 to 1 (normalized).
 //  * @name lightLevel

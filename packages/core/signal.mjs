@@ -145,25 +145,117 @@ export const mouseX = signal(() => _mouseX);
  *
  */
 
-let _accX = 0, _accY = 0, _accZ = 0;
+let _accelerationX = 0, _accelerationY = 0, _accelerationZ = 0;
+let _rotationAlpha = 0, _rotationBeta = 0, _rotationGamma = 0;
+//TODO: add support for rotationX, rotationY, rotationZ using DeviceOrientationEvent
 
+
+function requestDeviceOrientationEventPermission() {
+  if (
+    typeof window.DeviceOrientationEvent !== "undefined" &&
+    typeof window.DeviceOrientationEvent.requestPermission === "function"
+  ) {
+    window.DeviceOrientationEvent.requestPermission()
+      .catch(() => {
+        console.error("DeviceOrientationEvent permission denied");
+      })
+      .then(() => {
+        console.log("DeviceOrientationEvent permission granted");
+      });
+  } else {
+    console.error("DeviceOrientationEvent not supported.");
+    //permissionGranted = true;
+  }
+}
+
+function requestDeviceMotionEventPermission() {
+  if (
+    typeof window.DeviceMotionEvent !== "undefined" &&
+    typeof window.DeviceMotionEvent.requestPermission === "function"
+  ){
+  window.DeviceMotionEvent.requestPermission()
+    .then((response) => {
+      if (response == "granted") {
+        console.log("DeviceMotionEvent permission granted");
+      } else {
+        console.error("DeviceMotionEvent permission denied");
+      }
+    })
+    .catch(console.error);
+  }else {
+    console.error("DeviceMotionEvent not supported.");
+    //permissionGranted = true;
+  }
+  //this.remove();
+}
 // Check if DeviceMotionEvent is supported
 if (typeof window !== 'undefined' && window.DeviceMotionEvent) {
+  // request permission for mobile sensors
+  requestDeviceMotionEventPermission();
+  requestDeviceOrientationEventPermission();
+  // listen to mobile sensors
   window.addEventListener('devicemotion', (event) => {
     // Normalizing accelerometer values to a 0-1 range
-    console.log(event.accelerationIncludingGravity);
-    _accX = (event.accelerationIncludingGravity.x + 10) / 20;  // Range: 0 to 1
-    _accY = (event.accelerationIncludingGravity.y + 10) / 20;  // Range: 0 to 1
-    _accZ = (event.accelerationIncludingGravity.z + 10) / 20;  // Range: 0 to 1
+    _accelerationX = (event.accelerationIncludingGravity.x + 10) / 20;  // Range: 0 to 1
+    _accelerationY = (event.accelerationIncludingGravity.y + 10) / 20;  // Range: 0 to 1
+    _accelerationZ = (event.accelerationIncludingGravity.z + 10) / 20;  // Range: 0 to 1
+    _rotationAlpha = (event.rotationRate.alpha + Math.PI) / (Math.PI * 2);  // Range: 0 to 1
+    _rotationBeta = (event.rotationRate.beta + Math.PI) / (Math.PI * 2);  // Range: 0 to 1
+    _rotationGamma = (event.rotationRate.gamma + Math.PI) / (Math.PI * 2);  // Range: 0 to 1
+  
   });
 }
 
 // Define signals for the accelerometer values
-export const accX = signal(() => _accX);
-export const accY = signal(() => _accY);
-export const accZ = signal(() => _accZ);
+export const accelerationX = signal(() => _accelerationX);
+export const accelerationY = signal(() => _accelerationY);
+export const accelerationZ = signal(() => _accelerationZ);
+export const accX = accelerationX;
+export const accY = accelerationY;
+export const accZ = accelerationZ;
+
+export const rotationAlpha = signal(() => _rotationAlpha);
+export const rotationBeta = signal(() => _rotationBeta);
+export const rotationGamma = signal(() => _rotationGamma);
+export const rotA = rotationAlpha;
+export const rotB = rotationBeta;
+export const rotG = rotationGamma;
 
 
+// // Light Sensor (Ambient Light Sensor API)
+// /**
+//  *  The ambient light level ranges from 0 to 1 (normalized).
+//  * @name lightLevel
+//  * @return {Pattern}
+//  * @example
+//  * n(lightLevel.segment(4).range(0,7)).scale("E:major")
+//  *
+//  */
+
+// let _lightLevel = 0;
+
+// if ('AmbientLightSensor' in window) {
+//   try {
+//     const sensor = new AmbientLightSensor();
+//     sensor.addEventListener('reading', () => {
+//       // Normalize the illuminance value
+//       _lightLevel = Math.min(sensor.illuminance / 1000, 1); // Example range adjustment
+//     });
+//     sensor.start();
+//   } catch (e) {
+//     console.error('AmbientLightSensor not supported:', e);
+//   }
+// }
+
+// /**
+//  *  Signal for normalized ambient light level.
+//  * @name lightLevel
+//  * @return {Pattern}
+//  * @example
+//  * n(lightLevel.segment(4).range(0,7)).scale("E:major")
+//  *
+//  */
+// export const lightLevel = signal(() => 0.5);
 
 
 // random signals

@@ -172,45 +172,48 @@ export const mouseX = signal(() => _mouseX);
  *
  */
 
-let _accelerationX = 0, _accelerationY = 0, _accelerationZ = 0;
-let _rotationAlpha = 0, _rotationBeta = 0, _rotationGamma = 0;
+let _accelerationX = 0,
+  _accelerationY = 0,
+  _accelerationZ = 0;
+let _rotationAlpha = 0,
+  _rotationBeta = 0,
+  _rotationGamma = 0;
 //TODO: add support for rotationX, rotationY, rotationZ using DeviceOrientationEvent
-
 
 function requestDeviceOrientationEventPermission() {
   if (
-    typeof window.DeviceOrientationEvent !== "undefined" &&
-    typeof window.DeviceOrientationEvent.requestPermission === "function"
+    typeof window.DeviceOrientationEvent !== 'undefined' &&
+    typeof window.DeviceOrientationEvent.requestPermission === 'function'
   ) {
     window.DeviceOrientationEvent.requestPermission()
       .catch(() => {
-        console.error("DeviceOrientationEvent permission denied");
+        console.error('DeviceOrientationEvent permission denied');
       })
       .then(() => {
-        console.log("DeviceOrientationEvent permission granted");
+        console.log('DeviceOrientationEvent permission granted');
       });
   } else {
-    console.error("DeviceOrientationEvent not supported.");
+    console.error('DeviceOrientationEvent not supported.');
     //permissionGranted = true;
   }
 }
 
 function requestDeviceMotionEventPermission() {
   if (
-    typeof window.DeviceMotionEvent !== "undefined" &&
-    typeof window.DeviceMotionEvent.requestPermission === "function"
-  ){
-  window.DeviceMotionEvent.requestPermission()
-    .then((response) => {
-      if (response == "granted") {
-        console.log("DeviceMotionEvent permission granted");
-      } else {
-        console.error("DeviceMotionEvent permission denied");
-      }
-    })
-    .catch(console.error);
-  }else {
-    console.error("DeviceMotionEvent not supported.");
+    typeof window.DeviceMotionEvent !== 'undefined' &&
+    typeof window.DeviceMotionEvent.requestPermission === 'function'
+  ) {
+    window.DeviceMotionEvent.requestPermission()
+      .then((response) => {
+        if (response == 'granted') {
+          console.log('DeviceMotionEvent permission granted');
+        } else {
+          console.error('DeviceMotionEvent permission denied');
+        }
+      })
+      .catch(console.error);
+  } else {
+    console.error('DeviceMotionEvent not supported.');
     //permissionGranted = true;
   }
   //this.remove();
@@ -223,13 +226,12 @@ if (typeof window !== 'undefined' && window.DeviceMotionEvent) {
   // listen to mobile sensors
   window.addEventListener('devicemotion', (event) => {
     // Normalizing devicemotion values to a 0-1 range, sort of
-    _accelerationX = (event.accelerationIncludingGravity.x + 10) / 20;  // Range: 0 to 1
-    _accelerationY = (event.accelerationIncludingGravity.y + 10) / 20;  // Range: 0 to 1
-    _accelerationZ = (event.accelerationIncludingGravity.z + 10) / 20;  // Range: 0 to 1
-    _rotationAlpha = (event.rotationRate.alpha + Math.PI) / (Math.PI * 2);  // Range: 0 to 1
-    _rotationBeta  = (event.rotationRate.beta + Math.PI)  / (Math.PI * 2);    // Range: 0 to 1
-    _rotationGamma = (event.rotationRate.gamma + Math.PI) / (Math.PI * 2);  // Range: 0 to 1
-  
+    _accelerationX = (event.accelerationIncludingGravity.x + 10) / 20; // Range: 0 to 1
+    _accelerationY = (event.accelerationIncludingGravity.y + 10) / 20; // Range: 0 to 1
+    _accelerationZ = (event.accelerationIncludingGravity.z + 10) / 20; // Range: 0 to 1
+    _rotationAlpha = (event.rotationRate.alpha + Math.PI) / (Math.PI * 2); // Range: 0 to 1
+    _rotationBeta = (event.rotationRate.beta + Math.PI) / (Math.PI * 2); // Range: 0 to 1
+    _rotationGamma = (event.rotationRate.gamma + Math.PI) / (Math.PI * 2); // Range: 0 to 1
   });
 }
 
@@ -247,7 +249,6 @@ export const rotationGamma = signal(() => _rotationGamma);
 export const rotA = rotationAlpha;
 export const rotB = rotationBeta;
 export const rotG = rotationGamma;
-
 
 // // Light Sensor (Ambient Light Sensor API, not currently supported by iOS Safari)
 // /**
@@ -283,7 +284,6 @@ export const rotG = rotationGamma;
 //  *
 //  */
 // export const lightLevel = signal(() => 0.5);
-
 
 // random signals
 

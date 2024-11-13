@@ -191,6 +191,7 @@ function requestDeviceOrientationEventPermission() {
       })
       .then(() => {
         console.log('DeviceOrientationEvent permission granted');
+        startListeningToDeviceMotion();
       });
   } else {
     console.error('DeviceOrientationEvent not supported');
@@ -207,7 +208,7 @@ function requestDeviceMotionEventPermission() {
       .then((response) => {
         if (response == 'granted') {
           console.log('DeviceMotionEvent permission granted');
-          startListeningToDeviceMotion();
+          //startListeningToDeviceMotion();
         } else {
           console.error('DeviceMotionEvent permission denied');
         }

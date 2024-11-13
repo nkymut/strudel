@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
+    "dev-https": "astro dev --https --host 0.0.0.0",
     "start": "astro dev",
     "check": "astro check && tsc",
     "build": "astro build",
@@ -36,11 +37,11 @@
     "@strudel/osc": "workspace:*",
     "@strudel/serial": "workspace:*",
     "@strudel/soundfonts": "workspace:*",
+    "@strudel/tidal": "workspace:*",
     "@strudel/tonal": "workspace:*",
     "@strudel/transpiler": "workspace:*",
     "@strudel/webaudio": "workspace:*",
     "@strudel/xen": "workspace:*",
-    "@strudel/tidal": "workspace:*",
     "@supabase/supabase-js": "^2.39.1",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
@@ -67,6 +68,7 @@
   },
   "devDependencies": {
     "@vite-pwa/astro": "^0.2.0",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "html-escaper": "^3.0.3",
     "sharp": "^0.33.1",
     "vite-plugin-pwa": "^0.17.4",

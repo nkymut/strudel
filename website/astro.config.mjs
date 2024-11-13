@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 import remarkToc from 'remark-toc';
 import rehypeSlug from 'rehype-slug';
@@ -11,7 +12,7 @@ import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
 // import { visualizer } from 'rollup-plugin-visualizer';
 
-const site = `https://strudel.cc/`; // root url without a path
+const site = `https:/nkymut.github.io/strudel/`; // root url without a path
 const base = '/'; // base path of the strudel site
 const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
 
@@ -135,6 +136,14 @@ export default defineConfig({
   site,
   base,
   vite: {
+    //plugins: [basicSsl()],
+    server: {
+      host: '0.0.0.0', // Ensures it binds to all network interfaces
+      https: {
+        key: '../../key.pem',
+        cert: '../../cert.pem',
+      },
+    },
     ssr: {
       // Example: Force a broken package to skip SSR processing, if needed
       // external: ['fraction.js'], // https://github.com/infusion/Fraction.js/issues/51

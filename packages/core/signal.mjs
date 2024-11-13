@@ -120,28 +120,28 @@ export const mouseX = signal(() => _mouseX);
 
 /**
  *  The accelerometer's x-axis value ranges from 0 to 1.
- * @name accX
+ * @name accelerationX
  * @return {Pattern}
  * @example
- * n(accX.segment(4).range(0,7)).scale("C:minor")
+ * n(accelerationX.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
  *  The accelerometer's y-axis value ranges from 0 to 1.
- * @name accY
+ * @name accelerationY
  * @return {Pattern}
  * @example
- * n(accY.segment(4).range(0,7)).scale("C:minor")
+ * n(accelerationY.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
  *  The accelerometer's z-axis value ranges from 0 to 1.
- * @name accZ
+ * @name accelerationZ
  * @return {Pattern}
  * @example
- * n(accZ.segment(4).range(0,7)).scale("C:minor")
+ * n(accelerationZ.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
@@ -193,7 +193,7 @@ function requestDeviceOrientationEventPermission() {
         console.log('DeviceOrientationEvent permission granted');
       });
   } else {
-    console.error('DeviceOrientationEvent not supported.');
+    console.error('DeviceOrientationEvent not supported');
     //permissionGranted = true;
   }
 }
@@ -218,8 +218,8 @@ function requestDeviceMotionEventPermission() {
   }
   //this.remove();
 }
-// Check if DeviceMotionEvent is supported
-if (typeof window !== 'undefined' && window.DeviceMotionEvent) {
+
+if (typeof window !== 'undefined') {
   // request permission for mobile sensors
   requestDeviceMotionEventPermission();
   requestDeviceOrientationEventPermission();
@@ -239,16 +239,16 @@ if (typeof window !== 'undefined' && window.DeviceMotionEvent) {
 export const accelerationX = signal(() => _accelerationX);
 export const accelerationY = signal(() => _accelerationY);
 export const accelerationZ = signal(() => _accelerationZ);
-export const accX = accelerationX;
-export const accY = accelerationY;
-export const accZ = accelerationZ;
+export const accX = signal(() => _accelerationX);
+export const accY = signal(() => _accelerationY);
+export const accZ = signal(() => _accelerationZ);
 
 export const rotationAlpha = signal(() => _rotationAlpha);
 export const rotationBeta = signal(() => _rotationBeta);
 export const rotationGamma = signal(() => _rotationGamma);
-export const rotA = rotationAlpha;
-export const rotB = rotationBeta;
-export const rotG = rotationGamma;
+export const rotA = signal(() => _rotationAlpha);
+export const rotB = signal(() => _rotationBeta);
+export const rotG = signal(() => _rotationGamma);
 
 // // Light Sensor (Ambient Light Sensor API, not currently supported by iOS Safari)
 // /**

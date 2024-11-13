@@ -207,6 +207,7 @@ function requestDeviceMotionEventPermission() {
       .then((response) => {
         if (response == 'granted') {
           console.log('DeviceMotionEvent permission granted');
+          startListeningToDeviceMotion();
         } else {
           console.error('DeviceMotionEvent permission denied');
         }
@@ -219,13 +220,10 @@ function requestDeviceMotionEventPermission() {
   //this.remove();
 }
 
-if (typeof window !== 'undefined') {
-  // request permission for mobile sensors
-  requestDeviceMotionEventPermission();
-  requestDeviceOrientationEventPermission();
-  // listen to mobile sensors
+function startListeningToDeviceMotion() {
+  // Listen to device motion events
   window.addEventListener('devicemotion', (event) => {
-    // Normalizing devicemotion values to a 0-1 range, sort of
+    // Normalize devicemotion values to a 0-1 range
     _accelerationX = (event.accelerationIncludingGravity.x + 10) / 20; // Range: 0 to 1
     _accelerationY = (event.accelerationIncludingGravity.y + 10) / 20; // Range: 0 to 1
     _accelerationZ = (event.accelerationIncludingGravity.z + 10) / 20; // Range: 0 to 1
@@ -233,6 +231,12 @@ if (typeof window !== 'undefined') {
     _rotationBeta = (event.rotationRate.beta + Math.PI) / (Math.PI * 2); // Range: 0 to 1
     _rotationGamma = (event.rotationRate.gamma + Math.PI) / (Math.PI * 2); // Range: 0 to 1
   });
+}
+
+if (typeof window !== 'undefined') {
+  // request permission for mobile sensors
+  requestDeviceMotionEventPermission();
+  requestDeviceOrientationEventPermission();
 }
 
 // Define signals for the accelerometer values

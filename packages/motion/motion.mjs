@@ -1,4 +1,4 @@
-// DeviceMotionSignals.js
+// motion.mjs
 
 import { signal } from '../core/signal.mjs';
 

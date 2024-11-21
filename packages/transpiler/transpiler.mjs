@@ -159,7 +159,6 @@ function sliderWithLocation(node) {
   return node;
 }
 
-
 export function getWidgetID(widgetConfig) {
   // the widget id is used as id for the dom element + as key for eventual resources
   // for example, for each scope widget, a new analyser + buffer (large) is created

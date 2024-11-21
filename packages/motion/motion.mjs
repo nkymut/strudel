@@ -62,7 +62,6 @@ import { signal } from '../core/signal.mjs';
  *
  */
 
-
 /**
  *  The device's rotation around the alpha-axis value ranges from 0 to 1.
  * @name rotationAlpha
@@ -153,11 +152,10 @@ import { signal } from '../core/signal.mjs';
  *
  */
 
-
 class DeviceMotionHandler {
   constructor() {
     this.GRAVITY = 9.81;
-    
+
     // Initialize sensor values
     this._acceleration = {
       x: 0,
@@ -168,8 +166,8 @@ class DeviceMotionHandler {
     this._gravity = {
       x: 0,
       y: 0,
-      z: 0
-    }
+      z: 0,
+    };
 
     this._rotation = {
       alpha: 0,
@@ -181,17 +179,17 @@ class DeviceMotionHandler {
       alpha: 0,
       beta: 0,
       gamma: 0,
-    }
+    };
 
     this._absoluteOrientation = {
       alpha: 0,
       beta: 0,
       gamma: 0,
-    }
+    };
 
     this._permissionStatus = 'unknown';
   }
- 
+
   async requestPermissions() {
     if (typeof DeviceMotionEvent?.requestPermission === 'function') {
       try {
@@ -215,24 +213,15 @@ class DeviceMotionHandler {
   setupEventListeners() {
     if (this._permissionStatus === 'granted') {
       // Device Motion handler
-      window.addEventListener(
-        'devicemotion',this.handleDeviceMotion.bind(this),true,
-      );
-      window.addEventListener(
-        'deviceorientation',
-        this.handleDeviceOrientation.bind(this),true
-      )
-      window.addEventListener(
-        'deviceorientationabsolute',
-        this.handleAbsoluteDeviceOrientation.bind(this),true
-      )
-
+      window.addEventListener('devicemotion', this.handleDeviceMotion.bind(this), true);
+      window.addEventListener('deviceorientation', this.handleDeviceOrientation.bind(this), true);
+      window.addEventListener('deviceorientationabsolute', this.handleAbsoluteDeviceOrientation.bind(this), true);
     }
   }
 
-  handleDeviceMotion(event){
+  handleDeviceMotion(event) {
     //console.log(event);
-    if (event.acceleration ) {
+    if (event.acceleration) {
       // Normalize acceleration values to 0-1 range
       this._acceleration.x = (event.acceleration.x + 1) / 2;
       this._acceleration.y = (event.acceleration.y + 1) / 2;
@@ -254,15 +243,14 @@ class DeviceMotionHandler {
     }
   }
 
-  handleDeviceOrientation(event){
-    this._orientation.alpha = (event.alpha) / 360; //a(0~360)
+  handleDeviceOrientation(event) {
+    this._orientation.alpha = event.alpha / 360; //a(0~360)
     this._orientation.beta = (event.beta + 180) / 360; //b(-180~180)
     this._orientation.gamma = (event.gamma + 90) / 180; //g(-90~90)
-
   }
 
-  handleAbsoluteDeviceOrientation(event){
-    this._absoluteOrientation.alpha = (event.alpha) / 360; //a(0~360)
+  handleAbsoluteDeviceOrientation(event) {
+    this._absoluteOrientation.alpha = event.alpha / 360; //a(0~360)
     this._absoluteOrientation.beta = (event.beta + 180) / 360; //b(-180~180)
     this._absoluteOrientation.gamma = (event.gamma + 90) / 180; //g(-90~90)
   }
@@ -271,16 +259,16 @@ class DeviceMotionHandler {
   getAcceleration() {
     return this._acceleration;
   }
-  getGravity(){
+  getGravity() {
     return this._gravity;
   }
   getRotation() {
     return this._rotation;
   }
-  getOrientation(){
+  getOrientation() {
     return this._orientation;
   }
-  getAbsoluteOrientation(){
+  getAbsoluteOrientation() {
     return this._absoluteOrientation;
   }
 }
@@ -305,7 +293,7 @@ export const accZ = accelerationZ;
 
 // Create signals for gravity
 export const gravityX = signal(() => deviceMotion.getGravity().x);
-export const gravityY = signal(() => deviceMotion.getGravity().y); 
+export const gravityY = signal(() => deviceMotion.getGravity().y);
 export const gravityZ = signal(() => deviceMotion.getGravity().z);
 
 // Aliases for shorter names
@@ -313,8 +301,7 @@ export const gravX = gravityX;
 export const gravY = gravityY;
 export const gravZ = gravityZ;
 
-
-// Create signals for orientation 
+// Create signals for orientation
 export const orientationAlpha = signal(() => deviceMotion.getOrientation().alpha);
 export const orientationBeta = signal(() => deviceMotion.getOrientation().beta);
 export const orientationGamma = signal(() => deviceMotion.getOrientation().gamma);
@@ -333,10 +320,9 @@ export const oriX = orientationX;
 export const oriY = orientationY;
 export const oriZ = orientationZ;
 
-
 // Create signals for absolute orientation
 export const absoluteOrientationAlpha = signal(() => deviceMotion.getAbsoluteOrientation().alpha);
-export const absoluteOrientationBeta = signal(() => deviceMotion.getAbsoluteOrientation().beta); 
+export const absoluteOrientationBeta = signal(() => deviceMotion.getAbsoluteOrientation().beta);
 export const absoluteOrientationGamma = signal(() => deviceMotion.getAbsoluteOrientation().gamma);
 
 // Aliases for shorter names

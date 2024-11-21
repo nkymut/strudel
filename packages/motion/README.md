@@ -31,5 +31,36 @@ generate SSL cert if its necessary
 
 `openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout key.pem -out cert.pem`
 
+## Usage
 
-That's it! Now you can compose music on the train while swaying your smartphone around as if you're performing Butoh! 💃
+| Motion  | Long Names & Aliases | Description |
+|----------------------------|-----------------------------------------------------------|------------------------------------------|
+| Acceleration | accelerationX (accX), accelerationY (accY), accelerationZ (accZ) | X, Y, Z-axis acceleration values |
+| Gravity | gravityX (gravX), gravityY (gravY), gravityZ (gravZ) | X, Y, Z-axis gravity values |
+| Rotation | rotationAlpha (rotA, rotZ), rotationBeta (rotB, rotX), rotationGamma (rotG, rotY) | Rotation around alpha, beta, gamma axes and mapped to X, Y, Z  |
+| Orientation | orientationAlpha (oriA, oriZ), orientationBeta (oriB, oriX), orientationGamma (oriG, oriY) | Orientation alpha, beta, gamma values and mapped to X, Y, Z  |
+| Absolute Orientation | absoluteOrientationAlpha (absOriA, absOriZ), absoluteOrientationBeta (absOriB, absOriX), absoluteOrientationGamma (absOriG, absOriY) | Absolute orientation alpha, beta, gamma values and mapped to X, Y, Z |
+
+## Example
+
+```
+enableMotion() //enable DeviceMotion 
+
+let tempo = 200
+
+$_: accX.segment(16).gain().log()
+
+$:n("[0 1 3 1 5 4]/4")
+  .scale("Bb:lydian")
+  .sometimesBy(0.5,sub(note(12)))
+  .lpf(gravityY.range(20,1000))
+  .lpq(gravityZ.range(1,30))
+  .lpenv(gravityX.range(2,2))
+  .gain(oriX.range(0.2,0.8))
+  .room(oriZ.range(0,0.5))
+  .attack(oriY.range(0,0.3))
+  .delay(rotG.range(0,1))
+  .decay(rotA.range(0,1))
+  .attack(rotB.range(0,0.1))
+  .sound("sawtooth").cpm(tempo)
+```

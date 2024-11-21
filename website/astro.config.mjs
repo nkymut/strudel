@@ -80,7 +80,7 @@ export default defineConfig({
                 /^https:\/\/cdn\.freesound\.org\/.*/i,
                 /^https:\/\/shabda\.ndre\.gr\/.*/i,
               ].some((regex) => regex.test(url)),
-            handler: 'CacheFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'external-samples',
               expiration: {

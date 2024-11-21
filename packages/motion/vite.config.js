@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [],
   build: {
     lib: {
-      entry: resolve(__dirname, 'motion.mjs'),
+      entry: resolve(__dirname, 'index.mjs'),
       formats: ['es'],
       fileName: (ext) => ({ es: 'index.mjs' })[ext],
     },

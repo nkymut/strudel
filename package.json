@@ -53,8 +53,7 @@
     "@strudel/tonal": "workspace:*",
     "@strudel/transpiler": "workspace:*",
     "@strudel/webaudio": "workspace:*",
-    "@strudel/xen": "workspace:*",
-    "@strudel/motion":"workspace:*"
+    "@strudel/xen": "workspace:*"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.9",

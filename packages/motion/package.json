@@ -2,7 +2,7 @@
     "name": "@strudel/motion",
     "version": "1.1.0",
     "description": "DeviceMotion API for strudel",
-    "main": "motion.mjs",
+    "main": "index.mjs",
     "type": "module",
     "publishConfig": {
       "main": "dist/index.mjs"

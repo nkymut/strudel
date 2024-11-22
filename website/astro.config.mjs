@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
+import basicSsl from '@vitejs/plugin-basic-ssl'; // Add this import
 
 import remarkToc from 'remark-toc';
 import rehypeSlug from 'rehype-slug';
@@ -135,6 +136,14 @@ export default defineConfig({
   site,
   base,
   vite: {
+    plugins: [basicSsl()],
+    server: {
+      host: '0.0.0.0', // Ensures it binds to all network interfaces
+      // https: {
+      //   key: '../../key.pem', //
+      //   cert: '../../cert.pem',
+      // },
+    },
     ssr: {
       // Example: Force a broken package to skip SSR processing, if needed
       // external: ['fraction.js'], // https://github.com/infusion/Fraction.js/issues/51

@@ -82,6 +82,7 @@ export function loadModules() {
     import('@strudel/csound'),
     import('@strudel/tidal'),
     import('@strudel/motion'),
+    import('@strudel/geolocation'),
   ];
   if (isTauri()) {
     modules = modules.concat([

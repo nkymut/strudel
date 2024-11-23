@@ -146,10 +146,9 @@ export function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c; // Distance in meters
 }
 
-
 export const distanceTo = (latOrCoords, lon) => {
   let targetLat, targetLon;
-  
+
   if (typeof latOrCoords === 'object' && latOrCoords !== null) {
     // Handle {latitude, longitude} object
     targetLat = latOrCoords.latitude;
@@ -159,14 +158,14 @@ export const distanceTo = (latOrCoords, lon) => {
     targetLat = latOrCoords;
     targetLon = lon;
   }
-  
-  return signal(() => 
+
+  return signal(() =>
     geolocation.calculateDistance(
       geolocation.getPosition().latitude,
       geolocation.getPosition().longitude,
       targetLat,
-      targetLon
-    )
+      targetLon,
+    ),
   );
 };
 

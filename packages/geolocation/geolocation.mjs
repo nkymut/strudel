@@ -133,6 +133,161 @@ export async function enableGeolocation() {
   return geolocation.requestPermissions();
 }
 
+export function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // Distance in meters
+}
+
+
+export const distanceTo = (latOrCoords, lon) => {
+  let targetLat, targetLon;
+  
+  if (typeof latOrCoords === 'object' && latOrCoords !== null) {
+    // Handle {latitude, longitude} object
+    targetLat = latOrCoords.latitude;
+    targetLon = latOrCoords.longitude;
+  } else {
+    // Handle separate lat, lon parameters
+    targetLat = latOrCoords;
+    targetLon = lon;
+  }
+  
+  return signal(() => 
+    geolocation.calculateDistance(
+      geolocation.getPosition().latitude,
+      geolocation.getPosition().longitude,
+      targetLat,
+      targetLon
+    )
+  );
+};
+
+export const distance = distanceTo; // alias
+
+/**
+ * Extracts coordinates from a Google Maps or OpenStreetMap URL
+ * Supports various formats:
+ * Google Maps:
+ * - https://www.google.com/maps?q=48.8584,2.2945
+ * - https://www.google.com/maps/@48.8584,2.2945,15z
+ * - https://goo.gl/maps/...
+ * - https://maps.google.com/?ll=48.8584,2.2945
+ * OpenStreetMap:
+ * - https://www.openstreetmap.org/#map=15/48.8584/2.2945
+ * - https://www.openstreetmap.org/?mlat=48.8584&mlon=2.2945
+ * @param {string} url - Maps URL
+ * @returns {{latitude: number, longitude: number} | null}
+ */
+export function locationFromUrl(url) {
+  try {
+    const urlObj = new URL(url);
+
+    // Handle OpenStreetMap URLs
+    if (urlObj.hostname.includes('openstreetmap.org')) {
+      // Format: /#map=15/48.8584/2.2945
+      const hashMatch = url.match(/#map=\d+\/(-?\d+\.\d+)\/(-?\d+\.\d+)/);
+      if (hashMatch) {
+        return {
+          latitude: parseFloat(hashMatch[1]),
+          longitude: parseFloat(hashMatch[2]),
+        };
+      }
+
+      // Format: /?mlat=48.8584&mlon=2.2945
+      if (urlObj.searchParams.has('mlat') && urlObj.searchParams.has('mlon')) {
+        return {
+          latitude: parseFloat(urlObj.searchParams.get('mlat')),
+          longitude: parseFloat(urlObj.searchParams.get('mlon')),
+        };
+      }
+    }
+
+    // Handle Google Maps URLs
+    if (urlObj.hostname.includes('google.com')) {
+      // Format: ?q=48.8584,2.2945
+      if (urlObj.searchParams.has('q')) {
+        const [lat, lng] = urlObj.searchParams.get('q').split(',');
+        return { latitude: parseFloat(lat), longitude: parseFloat(lng) };
+      }
+
+      // Format: ?ll=48.8584,2.2945
+      if (urlObj.searchParams.has('ll')) {
+        const [lat, lng] = urlObj.searchParams.get('ll').split(',');
+        return { latitude: parseFloat(lat), longitude: parseFloat(lng) };
+      }
+
+      // Format: /maps/@48.8584,2.2945,15z
+      const matches = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (matches) {
+        return {
+          latitude: parseFloat(matches[1]),
+          longitude: parseFloat(matches[2]),
+        };
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Failed to parse Maps URL:', error);
+    return null;
+  }
+}
+
+// Helper function that combines coordsFromUrl with distanceTo
+export const distanceToUrl = (url) => {
+  const coords = locationFromUrl(url);
+  if (!coords) return signal(() => 0);
+  return distanceTo(coords.latitude, coords.longitude);
+};
+
+/**
+ * Converts a location keyword into coordinates using OpenStreetMap Nominatim API
+ * @param {string} keyword - Location keyword (e.g., "Eiffel Tower, Paris")
+ * @returns {Promise<{latitude: number, longitude: number} | null>}
+ */
+export async function locationFromKeyword(keyword) {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(keyword)}&format=json&limit=1`,
+      {
+        headers: {
+          'User-Agent': 'Strudel/1.0', // Required by Nominatim's terms of use
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!data || !data[0]) {
+      console.warn('Location not found:', keyword);
+      return null;
+    }
+
+    return {
+      latitude: parseFloat(data[0].lat),
+      longitude: parseFloat(data[0].lon),
+    };
+  } catch (error) {
+    console.error('Failed to geocode location:', error);
+    return null;
+  }
+}
+
+// Helper function that combines locationFromKeyword with distanceTo
+export const distanceToKeyword = async (keyword) => {
+  const coords = await locationFromKeyword(keyword);
+  if (!coords) return signal(() => 0);
+  return distanceTo(coords);
+};
+
 // Create signals for location data
 export const latitude = signal(() => geolocation.getPosition().normalizedLatitude);
 export const longitude = signal(() => geolocation.getPosition().normalizedLongitude);

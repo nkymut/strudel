@@ -34,21 +34,21 @@ import { signal } from '../core/signal.mjs';
 
 /**
  *  The device's current speed in meters per second (if available).
- * @name speed
+ * @name geoSpeed
  * @return {Pattern}
  * @synonyms spd
  * @example
- * n(speed.segment(4).range(0,7)).scale("C:minor")
+ * n(geoSpeed.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
 /**
  *  The device's current heading in degrees (if available).
- * @name heading
+ * @name geoHeading
  * @return {Pattern}
  * @synonyms hdg
  * @example
- * n(heading.segment(4).range(0,7)).scale("C:minor")
+ * n(geoHeading.segment(4).range(0,7)).scale("C:minor")
  *
  */
 
@@ -291,8 +291,8 @@ export const distanceToKeyword = async (keyword) => {
 export const latitude = signal(() => geolocation.getPosition().normalizedLatitude);
 export const longitude = signal(() => geolocation.getPosition().normalizedLongitude);
 export const altitude = signal(() => geolocation.getPosition().normalizedAltitude);
-export const speed = signal(() => geolocation.getPosition().normalizedSpeed);
-export const heading = signal(() => geolocation.getPosition().normalizedHeading);
+export const geoSpeed = signal(() => geolocation.getPosition().normalizedSpeed);
+export const geoHeading = signal(() => geolocation.getPosition().normalizedHeading);
 
 // Raw (unnormalized) values
 export const rawLatitude = signal(() => geolocation.getPosition().latitude);
@@ -306,5 +306,5 @@ export const lat = latitude;
 export const lon = longitude;
 export const long = longitude;
 export const alt = altitude;
-export const spd = speed;
-export const hdg = heading;
+export const spd = geoSpeed;
+export const hdg = geoHeading;

@@ -83,6 +83,7 @@ export function loadModules() {
     import('@strudel/tidal'),
     import('@strudel/motion'),
     import('@strudel/geolocation'),
+    import('@strudel/gamepad'),
   ];
   if (isTauri()) {
     modules = modules.concat([

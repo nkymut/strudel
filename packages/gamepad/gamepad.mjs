@@ -44,6 +44,9 @@ class GamepadHandler {
     };
     poll();
   }
+
+  getAxes() { return this._axes; }
+  getButtons() { return this._buttons; }
 }
 
 // Replace singleton with factory function

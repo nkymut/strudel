@@ -21,6 +21,7 @@ import '@strudel/xen/xen.mjs';
 // import '@strudel/webaudio/webaudio.mjs';
 // import '@strudel/serial/serial.mjs';
 import '../website/src/repl/piano';
+import * as geolocationHelpers from '../packages/geolocation/index.mjs';
 
 class MockedNode {
   chain() {
@@ -169,6 +170,7 @@ evalScope(
   uiHelpersMocked,
   webaudio,
   tonalHelpers,
+  geolocationHelpers,
   /*
   toneHelpers,
   voicingHelpers,

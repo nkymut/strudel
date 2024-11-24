@@ -53,14 +53,13 @@ const pattern = sequence([
 ```javascript
 // Use button values to control amplitude
 $: sequence([
-  note("c3").gain(pad.tglX),    // A button controls amplitude
-  note("e3").gain(pad.tglY),    // B button controls amplitude
+  note("c3").gain(pad.tglX),    // X button toggles gain
+  note("e3").gain(pad.tglY),    // Y button toggles gain
 ]);
 
 // Use analog stick for continuous control
-$: note("c4*4".add(pad.y1_2.range(-24,24)))
-           // Left stick Y controls pitch shift
-  .pan(pad.x1_2);          // Left stick Y controls panning
+$: note("c4*4".add(pad.y1_2.range(-24,24))) // Left stick Y controls pitch shift
+  .pan(pad.x1_2);          // Left stick X controls panning
 
 // Use toggle buttons to switch patterns on/off
 $: when(pad.tglA, 

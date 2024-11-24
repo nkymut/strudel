@@ -1,4 +1,4 @@
-# @strudel/motion
+# @strudel/gamepad
 
 This package adds gamepad input functionality to strudel Patterns.
 

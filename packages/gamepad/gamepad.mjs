@@ -2,6 +2,88 @@
 
 import { signal } from '@strudel/core';
 
+// Button mapping for Logitech Dual Action (STANDARD GAMEPAD Vendor: 046d Product: c216)
+export const buttonMap = {
+  'a': 0, 'b': 1, 'x': 2, 'y': 3,
+  'lb': 4, 'rb': 5, 'lt': 6, 'rt': 7,
+  'back':8 ,'start':9,
+  'u': 12, 'up': 12, 
+  'd': 13, 'down': 13,
+  'l': 14, 'left': 14,
+  'r': 15, 'right': 15
+};
+
+class ButtonSequenceDetector {
+  constructor(timeWindow = 1000) {
+    this.sequence = [];
+    this.timeWindow = timeWindow;
+    this.lastInputTime = 0;
+    this.buttonStates = Array(16).fill(0); // Track previous state of each button
+      // Button mapping for character inputs
+  
+  }
+
+  addInput(buttonIndex, buttonValue) {
+    const currentTime = Date.now();
+
+    // Only add input on button press (rising edge)
+    if (buttonValue === 1 && this.buttonStates[buttonIndex] === 0) {
+      // Clear sequence if too much time has passed
+      if (currentTime - this.lastInputTime > this.timeWindow) {
+        this.sequence = [];
+      }
+
+      // Store the button name instead of index
+      const buttonName = Object.keys(buttonMap).find(
+        key => buttonMap[key] === buttonIndex
+      ) || buttonIndex.toString();
+
+      this.sequence.push({
+        input: buttonName,
+        timestamp: currentTime,
+      });
+
+      this.lastInputTime = currentTime;
+
+      console.log(this.sequence);
+      // Keep only inputs within the time window
+      this.sequence = this.sequence.filter((entry) => currentTime - entry.timestamp <= this.timeWindow);
+    }
+
+    // Update button state
+    this.buttonStates[buttonIndex] = buttonValue;
+  }
+
+  checkSequence(targetSequence) {
+
+    if (!Array.isArray(targetSequence) && typeof targetSequence !== 'string') {
+      console.error('ButtonSequenceDetector: targetSequence must be an array or string');
+      return 0;
+    }
+
+    if (this.sequence.length < targetSequence.length) return 0;
+
+    // Convert string input to array if needed
+    const sequence = typeof targetSequence === 'string' 
+    ? targetSequence.toLowerCase().split('')
+    : targetSequence.map(s => s.toString().toLowerCase());
+
+    // Get the last n inputs where n is the target sequence length
+    const lastInputs = this.sequence.slice(-targetSequence.length).map((entry) => entry.input);
+
+     // Compare sequences
+     return lastInputs.every((input, index) => {
+     const target = sequence[index];
+      // Check if either the input matches directly or they refer to the same button in the map
+      return input === target || 
+             buttonMap[input] === buttonMap[target] ||
+             // Also check if the numerical index matches
+             buttonMap[input] === parseInt(target);
+    }) ? 1 : 0;
+  
+  }
+}
+
 class GamepadHandler {
   constructor(index = 0) {
     // Add index parameter
@@ -59,6 +141,7 @@ export const gamepadValues = {};
 // Replace singleton with factory function
 export const gamepad = (index = 0) => {
   const handler = new GamepadHandler(index);
+  const sequenceDetector = new ButtonSequenceDetector(2000);
 
   // Initialize state for this gamepad if it doesn't exist
   if (!gamepadValues[index]) {
@@ -83,7 +166,11 @@ export const gamepad = (index = 0) => {
   const buttons = Array(16)
     .fill(null)
     .map((_, i) => {
-      const btn = signal(() => handler.getButtons()[i]);
+      const btn = signal(() => {
+        const value = handler.getButtons()[i];
+        sequenceDetector.addInput(i, value);
+        return value;
+      });
       let lastButtonState = 0;
       const toggle = signal(() => {
         const currentState = handler.getButtons()[i];
@@ -105,54 +192,22 @@ export const gamepad = (index = 0) => {
       return { value: btn, toggle };
     });
 
+  const checkSequence = (sequence) => {
+    return signal(() => sequenceDetector.checkSequence(sequence));
+  };
+
   // Return an object with all controls
   return {
     ...axes,
     buttons,
-    a: buttons[0].value,
-    b: buttons[1].value,
-    x: buttons[2].value,
-    y: buttons[3].value,
-    lb: buttons[4].value,
-    rb: buttons[5].value,
-    lt: buttons[6].value,
-    rt: buttons[7].value,
-    A: buttons[0].value,
-    B: buttons[1].value,
-    X: buttons[2].value,
-    Y: buttons[3].value,
-    LB: buttons[4].value,
-    RB: buttons[5].value,
-    LT: buttons[6].value,
-    RT: buttons[7].value,
-    tglA: buttons[0].toggle,
-    tglB: buttons[1].toggle,
-    tglX: buttons[2].toggle,
-    tglY: buttons[3].toggle,
-    tglLB: buttons[4].toggle,
-    tglRB: buttons[5].toggle,
-    tglLT: buttons[6].toggle,
-    tglRT: buttons[7].toggle,
-    up: buttons[12].value,
-    down: buttons[13].value,
-    left: buttons[14].value,
-    right: buttons[15].value,
-    u: buttons[12].value,
-    d: buttons[13].value,
-    l: buttons[14].value,
-    r: buttons[15].value,
-    U: buttons[12].value,
-    D: buttons[13].value,
-    L: buttons[14].value,
-    R: buttons[15].value,
-    tglUp: buttons[12].toggle,
-    tglDown: buttons[13].toggle,
-    tglLeft: buttons[14].toggle,
-    tglRight: buttons[15].toggle,
-    tglU: buttons[12].toggle,
-    tglD: buttons[13].toggle,
-    tglL: buttons[14].toggle,
-    tglR: buttons[15].toggle,
+    ...Object.fromEntries(
+      Object.entries(buttonMap).flatMap(([key, index]) => [
+        [key.toLowerCase(), buttons[index].value],
+        [key.toUpperCase(), buttons[index].value],
+        [`tgl${key}`, buttons[index].toggle]
+      ])
+    ),
+    checkSequence,
   };
 };
 

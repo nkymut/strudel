@@ -215,8 +215,8 @@ export const gamepad = (index = 0) => {
       Object.entries(buttonMap).flatMap(([key, index]) => [
         [key.toLowerCase(), buttons[index].value],
         [key.toUpperCase(), buttons[index].value],
-        [`tgl${key.toLowerCase}`, buttons[index].toggle],
-        [`tgl${key.toUpperCase}`, buttons[index].toggle],
+        [`tgl${key.toLowerCase()}`, buttons[index].toggle],
+        [`tgl${key.toUpperCase()}`, buttons[index].toggle],
       ]),
     ),
     checkSequence,

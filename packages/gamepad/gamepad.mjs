@@ -4,13 +4,24 @@ import { signal } from '@strudel/core';
 
 // Button mapping for Logitech Dual Action (STANDARD GAMEPAD Vendor: 046d Product: c216)
 export const buttonMap = {
-  'a': 0, 'b': 1, 'x': 2, 'y': 3,
-  'lb': 4, 'rb': 5, 'lt': 6, 'rt': 7,
-  'back':8 ,'start':9,
-  'u': 12, 'up': 12, 
-  'd': 13, 'down': 13,
-  'l': 14, 'left': 14,
-  'r': 15, 'right': 15
+  a: 0,
+  b: 1,
+  x: 2,
+  y: 3,
+  lb: 4,
+  rb: 5,
+  lt: 6,
+  rt: 7,
+  back: 8,
+  start: 9,
+  u: 12,
+  up: 12,
+  d: 13,
+  down: 13,
+  l: 14,
+  left: 14,
+  r: 15,
+  right: 15,
 };
 
 class ButtonSequenceDetector {
@@ -19,8 +30,7 @@ class ButtonSequenceDetector {
     this.timeWindow = timeWindow;
     this.lastInputTime = 0;
     this.buttonStates = Array(16).fill(0); // Track previous state of each button
-      // Button mapping for character inputs
-  
+    // Button mapping for character inputs
   }
 
   addInput(buttonIndex, buttonValue) {
@@ -34,9 +44,7 @@ class ButtonSequenceDetector {
       }
 
       // Store the button name instead of index
-      const buttonName = Object.keys(buttonMap).find(
-        key => buttonMap[key] === buttonIndex
-      ) || buttonIndex.toString();
+      const buttonName = Object.keys(buttonMap).find((key) => buttonMap[key] === buttonIndex) || buttonIndex.toString();
 
       this.sequence.push({
         input: buttonName,
@@ -45,7 +53,7 @@ class ButtonSequenceDetector {
 
       this.lastInputTime = currentTime;
 
-      console.log(this.sequence);
+      //console.log(this.sequence);
       // Keep only inputs within the time window
       this.sequence = this.sequence.filter((entry) => currentTime - entry.timestamp <= this.timeWindow);
     }
@@ -55,7 +63,6 @@ class ButtonSequenceDetector {
   }
 
   checkSequence(targetSequence) {
-
     if (!Array.isArray(targetSequence) && typeof targetSequence !== 'string') {
       console.error('ButtonSequenceDetector: targetSequence must be an array or string');
       return 0;
@@ -64,23 +71,27 @@ class ButtonSequenceDetector {
     if (this.sequence.length < targetSequence.length) return 0;
 
     // Convert string input to array if needed
-    const sequence = typeof targetSequence === 'string' 
-    ? targetSequence.toLowerCase().split('')
-    : targetSequence.map(s => s.toString().toLowerCase());
+    const sequence =
+      typeof targetSequence === 'string'
+        ? targetSequence.toLowerCase().split('')
+        : targetSequence.map((s) => s.toString().toLowerCase());
 
     // Get the last n inputs where n is the target sequence length
     const lastInputs = this.sequence.slice(-targetSequence.length).map((entry) => entry.input);
 
-     // Compare sequences
-     return lastInputs.every((input, index) => {
-     const target = sequence[index];
+    // Compare sequences
+    return lastInputs.every((input, index) => {
+      const target = sequence[index];
       // Check if either the input matches directly or they refer to the same button in the map
-      return input === target || 
-             buttonMap[input] === buttonMap[target] ||
-             // Also check if the numerical index matches
-             buttonMap[input] === parseInt(target);
-    }) ? 1 : 0;
-  
+      return (
+        input === target ||
+        buttonMap[input] === buttonMap[target] ||
+        // Also check if the numerical index matches
+        buttonMap[input] === parseInt(target)
+      );
+    })
+      ? 1
+      : 0;
   }
 }
 
@@ -204,8 +215,8 @@ export const gamepad = (index = 0) => {
       Object.entries(buttonMap).flatMap(([key, index]) => [
         [key.toLowerCase(), buttons[index].value],
         [key.toUpperCase(), buttons[index].value],
-        [`tgl${key}`, buttons[index].toggle]
-      ])
+        [`tgl${key}`, buttons[index].toggle],
+      ]),
     ),
     checkSequence,
   };

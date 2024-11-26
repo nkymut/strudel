@@ -7,6 +7,7 @@ This package adds gamepad input functionality to strudel Patterns.
 ```sh
 npm i @strudel/gamepad --save
 ```
+
 ## Usage
 
 ```javascript
@@ -53,8 +54,8 @@ const pattern = sequence([
 ```javascript
 // Use button values to control amplitude
 $: sequence([
-  note("c3").gain(pad.tglX),    // X button toggles gain
-  note("e3").gain(pad.tglY),    // Y button toggles gain
+  note("bd").gain(pad.X),    // X button controls gain
+  note("[hh oh]").gain(pad.tglY),    // Y button toggles gain
 ]);
 
 // Use analog stick for continuous control
@@ -62,10 +63,24 @@ $: note("c4*4".add(pad.y1_2.range(-24,24))) // Left stick Y controls pitch shift
   .pan(pad.x1_2);          // Left stick X controls panning
 
 // Use toggle buttons to switch patterns on/off
-$: when(pad.tglA, 
-  note("c3"),              // Pattern plays when A is toggled on
-  note("-")                // Silent when A is toggled off
-);
+
+// Define button sequences
+const HADOKEN = [
+  'd',               // Down
+  'r',               // Right
+  'a',               // A
+];
+
+const KONAMI = 'uuddlrlrba' //Konami Code ↑↑↓↓←→←→BA
+
+// Add these lines to enable buttons(but why?)
+$:pad.D.segment(16).gain(0)
+$:pad.R.segment(16).gain(0)
+$:pad.A.segment(16).gain(0)
+
+// Check button sequence (returns 1 when detected, 0 when not within last 1 second)
+$: sound("hadoken").gain(pad.checkSequence(HADOKEN))
+
 ```
 
 ## Multiple Gamepads

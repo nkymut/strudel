@@ -86,6 +86,49 @@ export function drawFrequencyScope(
   }
 }
 
+function drawControlScope(
+  values = [],
+  {
+    color = 'white',
+    thickness = 3,
+    scale = 0.25,
+    pos = 0.75,
+    timespan = 4,
+    ctx = getDrawContext(),
+  } = {},
+) {
+  ctx.lineWidth = thickness;
+  ctx.strokeStyle = color;
+  let canvas = ctx.canvas;
+
+  if (!values.length) {
+    // if no values, draw straight line
+    ctx.beginPath();
+    let y = pos * canvas.height;
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+    return;
+  }
+
+  ctx.beginPath();
+  const sliceWidth = canvas.width / (timespan * 60); // assuming 60fps
+  let x = 0;
+  
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    const y = (pos - scale * v) * canvas.height;
+
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+    x += sliceWidth;
+  }
+  ctx.stroke();
+}
+
 function clearScreen(smear = 0, smearRGB = `0,0,0`, ctx = getDrawContext()) {
   if (!smear) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -147,3 +190,42 @@ Pattern.prototype.tscope = function (config = {}) {
 };
 
 Pattern.prototype.scope = Pattern.prototype.tscope;
+
+/**
+ * Renders a scope for control signals like mouse position or sine waves.
+ * @name cscope
+ * @param {object} config optional config with options:
+ * @param {string} color line color as hex or color name. defaults to white.
+ * @param {number} thickness line thickness. defaults to 3
+ * @param {number} scale scales the y-axis. Defaults to 0.25
+ * @param {number} pos y-position relative to screen height. 0 = top, 1 = bottom of screen
+ * @param {number} timespan number of seconds to show. defaults to 4
+ * @example
+ * mousex.cscope()
+ * @example
+ * sine.cscope({timespan: 2})
+ */
+Pattern.prototype.cscope = function (config = {}) {
+  const values = [];
+  const maxSamples = (config.timespan || 4) * 60; // 60fps * timespan seconds
+  let id = config.id ?? 1;
+  
+  return this.withValue(v => {
+    // Store raw value
+    values.push(v);
+    if (values.length > maxSamples) {
+      values.shift();
+    }
+    return v;
+  }).draw((haps) => {
+    clearScreen(config.smear, '0,0,0', config.ctx);
+    drawControlScope(values, {
+      color: config.color || getTheme().foreground,
+      thickness: config.thickness,
+      scale: config.scale,
+      pos: config.pos,
+      timespan: config.timespan,
+      ctx: config.ctx,
+    });
+  }, { id });
+};

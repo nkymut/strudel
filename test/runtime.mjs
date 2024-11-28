@@ -22,6 +22,9 @@ import '@strudel/xen/xen.mjs';
 // import '@strudel/webaudio/webaudio.mjs';
 // import '@strudel/serial/serial.mjs';
 import '../website/src/repl/piano';
+//import * as motionHelpers from '../packages/motion/index.mjs';
+//import * as geolocationHelpers from '../packages/geolocation/index.mjs';
+import * as gamepadHelpers from '../packages/gamepad/index.mjs';
 
 class MockedNode {
   chain() {
@@ -171,6 +174,7 @@ evalScope(
   webaudio,
   tonalHelpers,
   motionHelpers,
+  gamepadHelpers,
   /*
   toneHelpers,
   voicingHelpers,

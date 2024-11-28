@@ -6,7 +6,7 @@ export let sliderValues = {};
 const getSliderID = (from) => `slider_${from}`;
 
 export class SliderWidget extends WidgetType {
-  constructor(value, min, max, from, to, step, view) {
+  constructor(value, min, max, from, to, step, view, config) {
     super();
     this.value = value;
     this.min = min;
@@ -16,6 +16,37 @@ export class SliderWidget extends WidgetType {
     this.to = to;
     this.step = step;
     this.view = view;
+    // Default config values
+    const defaultConfig = {
+      width: '128px',
+      height: '16px',
+      color: '#3b82f6', // default blue color
+    };
+
+    // Parse CSS string using temporary DOM element
+    let userConfig = {};
+    if (config) {
+      const temp = document.createElement('div');
+      temp.style = config; // Browser parses CSS string
+
+      // Extract the applied styles
+      const { width, height, color, background } = temp.style;
+      if (width) userConfig.width = width;
+      if (height) userConfig.height = height;
+      if (color) userConfig.color = color;
+      if (background) userConfig.background = background;
+    }
+    //console.log(userConfig)
+    // Only override defaults if config is provided and values are defined
+    this.config = {
+      ...defaultConfig,
+      ...(userConfig && {
+        width: userConfig.width || defaultConfig.width,
+        height: userConfig.height || defaultConfig.height,
+        color: userConfig.color || defaultConfig.color,
+        background: userConfig.background || defaultConfig.background,
+      }),
+    };
   }
 
   eq() {
@@ -38,8 +69,24 @@ export class SliderWidget extends WidgetType {
     slider.from = this.from;
     slider.originalFrom = this.originalFrom;
     slider.to = this.to;
-    slider.style = 'width:64px;margin-right:4px;transform:translateY(4px)';
+
+    //slider.style = 'width:64px;margin-right:4px;transform:translateY(4px);'+this.config;
+    // Apply custom styling
+    const styles = [
+      `background: ${this.config.background}`,
+      `width: ${this.config.width}`,
+      `height: ${this.config.height}`,
+      'margin-right: 4px',
+      'margin-bottom: 4px',
+      //'transform: translateY(calc(50%))', // Center vertically relative to text
+      'vertical-align: middle', // Align with text baseline
+      // Custom slider styling
+      `accent-color:${this.config.background}`,
+    ];
+
+    slider.style = styles.join(';');
     this.slider = slider;
+
     slider.addEventListener('input', (e) => {
       const next = e.target.value;
       let insert = next;
@@ -67,11 +114,13 @@ export const updateSliderWidgets = (view, widgets) => {
 };
 
 function getSliders(widgetConfigs, view) {
+  console.log(widgetConfigs);
   return widgetConfigs
     .filter((w) => w.type === 'slider')
-    .map(({ from, to, value, min, max, step }) => {
+    .map(({ from, to, value, min, max, step, config }) => {
+      console.log(config);
       return Decoration.widget({
-        widget: new SliderWidget(value, min, max, from, to, step, view),
+        widget: new SliderWidget(value, min, max, from, to, step, view, config),
         side: 0,
       }).range(from /* , to */);
     });
@@ -102,6 +151,7 @@ export const sliderPlugin = ViewPlugin.fromClass(
         }
         for (let e of tr.effects) {
           if (e.is(setSliderWidgets)) {
+            console.log(tr.effects);
             this.decorations = Decoration.set(getSliders(e.value, update.view));
           }
         }

@@ -565,7 +565,7 @@ exports[`runs examples > example "_euclidRot" example index 20 1`] = `
 ]
 `;
 
-exports[`runs examples > example "accX" example index 0 1`] = `
+exports[`runs examples > example "absoluteOrientationAlpha" example index 0 1`] = `
 [
   "[ 0/1 → 1/4 | note:C3 ]",
   "[ 1/4 → 1/2 | note:C3 ]",
@@ -586,7 +586,7 @@ exports[`runs examples > example "accX" example index 0 1`] = `
 ]
 `;
 
-exports[`runs examples > example "accY" example index 0 1`] = `
+exports[`runs examples > example "absoluteOrientationBeta" example index 0 1`] = `
 [
   "[ 0/1 → 1/4 | note:C3 ]",
   "[ 1/4 → 1/2 | note:C3 ]",
@@ -607,7 +607,7 @@ exports[`runs examples > example "accY" example index 0 1`] = `
 ]
 `;
 
-exports[`runs examples > example "accZ" example index 0 1`] = `
+exports[`runs examples > example "absoluteOrientationGamma" example index 0 1`] = `
 [
   "[ 0/1 → 1/4 | note:C3 ]",
   "[ 1/4 → 1/2 | note:C3 ]",
@@ -3463,6 +3463,69 @@ exports[`runs examples > example "gain" example index 0 1`] = `
 
 exports[`runs examples > example "gap" example index 0 1`] = `[]`;
 
+exports[`runs examples > example "gravityX" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | note:C3 ]",
+  "[ 1/4 → 1/2 | note:C3 ]",
+  "[ 1/2 → 3/4 | note:C3 ]",
+  "[ 3/4 → 1/1 | note:C3 ]",
+  "[ 1/1 → 5/4 | note:C3 ]",
+  "[ 5/4 → 3/2 | note:C3 ]",
+  "[ 3/2 → 7/4 | note:C3 ]",
+  "[ 7/4 → 2/1 | note:C3 ]",
+  "[ 2/1 → 9/4 | note:C3 ]",
+  "[ 9/4 → 5/2 | note:C3 ]",
+  "[ 5/2 → 11/4 | note:C3 ]",
+  "[ 11/4 → 3/1 | note:C3 ]",
+  "[ 3/1 → 13/4 | note:C3 ]",
+  "[ 13/4 → 7/2 | note:C3 ]",
+  "[ 7/2 → 15/4 | note:C3 ]",
+  "[ 15/4 → 4/1 | note:C3 ]",
+]
+`;
+
+exports[`runs examples > example "gravityY" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | note:C3 ]",
+  "[ 1/4 → 1/2 | note:C3 ]",
+  "[ 1/2 → 3/4 | note:C3 ]",
+  "[ 3/4 → 1/1 | note:C3 ]",
+  "[ 1/1 → 5/4 | note:C3 ]",
+  "[ 5/4 → 3/2 | note:C3 ]",
+  "[ 3/2 → 7/4 | note:C3 ]",
+  "[ 7/4 → 2/1 | note:C3 ]",
+  "[ 2/1 → 9/4 | note:C3 ]",
+  "[ 9/4 → 5/2 | note:C3 ]",
+  "[ 5/2 → 11/4 | note:C3 ]",
+  "[ 11/4 → 3/1 | note:C3 ]",
+  "[ 3/1 → 13/4 | note:C3 ]",
+  "[ 13/4 → 7/2 | note:C3 ]",
+  "[ 7/2 → 15/4 | note:C3 ]",
+  "[ 15/4 → 4/1 | note:C3 ]",
+]
+`;
+
+exports[`runs examples > example "gravityZ" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | note:C3 ]",
+  "[ 1/4 → 1/2 | note:C3 ]",
+  "[ 1/2 → 3/4 | note:C3 ]",
+  "[ 3/4 → 1/1 | note:C3 ]",
+  "[ 1/1 → 5/4 | note:C3 ]",
+  "[ 5/4 → 3/2 | note:C3 ]",
+  "[ 3/2 → 7/4 | note:C3 ]",
+  "[ 7/4 → 2/1 | note:C3 ]",
+  "[ 2/1 → 9/4 | note:C3 ]",
+  "[ 9/4 → 5/2 | note:C3 ]",
+  "[ 5/2 → 11/4 | note:C3 ]",
+  "[ 11/4 → 3/1 | note:C3 ]",
+  "[ 3/1 → 13/4 | note:C3 ]",
+  "[ 13/4 → 7/2 | note:C3 ]",
+  "[ 7/2 → 15/4 | note:C3 ]",
+  "[ 15/4 → 4/1 | note:C3 ]",
+]
+`;
+
 exports[`runs examples > example "hpattack" example index 0 1`] = `
 [
   "[ 0/1 → 1/4 | note:c2 s:sawtooth hcutoff:500 hpattack:0.5 hpenv:4 ]",
@@ -5062,6 +5125,69 @@ exports[`runs examples > example "orbit" example index 0 1`] = `
   "[ 11/3 → 23/6 | s:hh delay:0.5 delaytime:0.25 orbit:1 ]",
   "[ 15/4 → 4/1 | s:sd delay:0.5 delaytime:0.125 orbit:2 ]",
   "[ 23/6 → 4/1 | s:hh delay:0.5 delaytime:0.25 orbit:1 ]",
+]
+`;
+
+exports[`runs examples > example "orientationAlpha" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | note:C3 ]",
+  "[ 1/4 → 1/2 | note:C3 ]",
+  "[ 1/2 → 3/4 | note:C3 ]",
+  "[ 3/4 → 1/1 | note:C3 ]",
+  "[ 1/1 → 5/4 | note:C3 ]",
+  "[ 5/4 → 3/2 | note:C3 ]",
+  "[ 3/2 → 7/4 | note:C3 ]",
+  "[ 7/4 → 2/1 | note:C3 ]",
+  "[ 2/1 → 9/4 | note:C3 ]",
+  "[ 9/4 → 5/2 | note:C3 ]",
+  "[ 5/2 → 11/4 | note:C3 ]",
+  "[ 11/4 → 3/1 | note:C3 ]",
+  "[ 3/1 → 13/4 | note:C3 ]",
+  "[ 13/4 → 7/2 | note:C3 ]",
+  "[ 7/2 → 15/4 | note:C3 ]",
+  "[ 15/4 → 4/1 | note:C3 ]",
+]
+`;
+
+exports[`runs examples > example "orientationBeta" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | note:C3 ]",
+  "[ 1/4 → 1/2 | note:C3 ]",
+  "[ 1/2 → 3/4 | note:C3 ]",
+  "[ 3/4 → 1/1 | note:C3 ]",
+  "[ 1/1 → 5/4 | note:C3 ]",
+  "[ 5/4 → 3/2 | note:C3 ]",
+  "[ 3/2 → 7/4 | note:C3 ]",
+  "[ 7/4 → 2/1 | note:C3 ]",
+  "[ 2/1 → 9/4 | note:C3 ]",
+  "[ 9/4 → 5/2 | note:C3 ]",
+  "[ 5/2 → 11/4 | note:C3 ]",
+  "[ 11/4 → 3/1 | note:C3 ]",
+  "[ 3/1 → 13/4 | note:C3 ]",
+  "[ 13/4 → 7/2 | note:C3 ]",
+  "[ 7/2 → 15/4 | note:C3 ]",
+  "[ 15/4 → 4/1 | note:C3 ]",
+]
+`;
+
+exports[`runs examples > example "orientationGamma" example index 0 1`] = `
+[
+  "[ 0/1 → 1/4 | note:C3 ]",
+  "[ 1/4 → 1/2 | note:C3 ]",
+  "[ 1/2 → 3/4 | note:C3 ]",
+  "[ 3/4 → 1/1 | note:C3 ]",
+  "[ 1/1 → 5/4 | note:C3 ]",
+  "[ 5/4 → 3/2 | note:C3 ]",
+  "[ 3/2 → 7/4 | note:C3 ]",
+  "[ 7/4 → 2/1 | note:C3 ]",
+  "[ 2/1 → 9/4 | note:C3 ]",
+  "[ 9/4 → 5/2 | note:C3 ]",
+  "[ 5/2 → 11/4 | note:C3 ]",
+  "[ 11/4 → 3/1 | note:C3 ]",
+  "[ 3/1 → 13/4 | note:C3 ]",
+  "[ 13/4 → 7/2 | note:C3 ]",
+  "[ 7/2 → 15/4 | note:C3 ]",
+  "[ 15/4 → 4/1 | note:C3 ]",
 ]
 `;
 

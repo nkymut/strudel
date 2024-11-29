@@ -21,6 +21,7 @@ export class SliderWidget extends WidgetType {
       width: '128px',
       height: '16px',
       color: '#3b82f6', // default blue color
+      background: '#ddd',
     };
 
     // Parse CSS string using temporary DOM element
@@ -36,7 +37,7 @@ export class SliderWidget extends WidgetType {
       if (color) userConfig.color = color;
       if (background) userConfig.background = background;
     }
-    //console.log(userConfig)
+    //console.log(userConfig);
     // Only override defaults if config is provided and values are defined
     this.config = {
       ...defaultConfig,
@@ -70,18 +71,18 @@ export class SliderWidget extends WidgetType {
     slider.originalFrom = this.originalFrom;
     slider.to = this.to;
 
-    //slider.style = 'width:64px;margin-right:4px;transform:translateY(4px);'+this.config;
+    // slider.style = 'width:64px;margin-right:4px;transform:translateY(4px);'+this.config;
     // Apply custom styling
     const styles = [
-      `background: ${this.config.background}`,
+      '-webkit-appearance: none',
+      `background: linear-gradient(to right,${this.config.background}  0%, ${this.config.background} 100%) scroll `,
+      'border-radius: 4px',
       `width: ${this.config.width}`,
       `height: ${this.config.height}`,
       'margin-right: 4px',
-      'margin-bottom: 4px',
-      //'transform: translateY(calc(50%))', // Center vertically relative to text
-      'vertical-align: middle', // Align with text baseline
-      // Custom slider styling
-      `accent-color:${this.config.background}`,
+      'margin-bottom: 2px',
+      'vertical-align: text-bottom',
+      `accent-color: ${this.config.color}`,
     ];
 
     slider.style = styles.join(';');

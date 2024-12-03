@@ -10,9 +10,14 @@ import { writeText } from '@tauri-apps/api/clipboard';
 import { $featuredPatterns, loadDBPatterns } from '@src/user_pattern_utils.mjs';
 
 // Create a single supabase client for interacting with your database
+// export const supabase = createClient(
+//   'https://pidxdsxphlhzjnzmifth.supabase.co',
+//   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpZHhkc3hwaGxoempuem1pZnRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NTYyMzA1NTYsImV4cCI6MTk3MTgwNjU1Nn0.bqlw7802fsWRnqU5BLYtmXk_k-D1VFmbkHMywWc15NM',
+// );
+
 export const supabase = createClient(
-  'https://pidxdsxphlhzjnzmifth.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBpZHhkc3hwaGxoempuem1pZnRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NTYyMzA1NTYsImV4cCI6MTk3MTgwNjU1Nn0.bqlw7802fsWRnqU5BLYtmXk_k-D1VFmbkHMywWc15NM',
+  'https://bmqvfrtaihypcpbttpgj.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtcXZmcnRhaWh5cGNwYnR0cGdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4NjYzMTYsImV4cCI6MjA0ODQ0MjMxNn0.NWiBINc4g2y9mZKQFvZ0YQSa5i8_HbxADhqI3C_0tcs',
 );
 
 let dbLoaded;
@@ -82,7 +87,6 @@ export function loadModules() {
     import('@strudel/csound'),
     import('@strudel/tidal'),
     import('@strudel/motion'),
-    import('@strudel/gamepad'),
   ];
   if (isTauri()) {
     modules = modules.concat([

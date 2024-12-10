@@ -267,6 +267,16 @@ importers:
 
   packages/embed: {}
 
+  packages/gamepad:
+    dependencies:
+      '@strudel/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      vite:
+        specifier: ^5.0.10
+        version: 5.4.9(@types/node@22.7.6)(terser@5.36.0)
+
   packages/hs2js:
     dependencies:
       web-tree-sitter:
@@ -330,6 +340,16 @@ importers:
       vitest:
         specifier: ^2.1.3
         version: 2.1.3(@types/node@22.7.6)(@vitest/ui@2.1.3)(terser@5.36.0)
+
+  packages/motion:
+    dependencies:
+      '@strudel/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      vite:
+        specifier: ^5.0.10
+        version: 5.4.9(@types/node@22.7.6)(terser@5.36.0)
 
   packages/osc:
     dependencies:
@@ -614,6 +634,9 @@ importers:
       '@strudel/draw':
         specifier: workspace:*
         version: link:../packages/draw
+      '@strudel/gamepad':
+        specifier: workspace:*
+        version: link:../packages/gamepad
       '@strudel/hydra':
         specifier: workspace:*
         version: link:../packages/hydra
@@ -623,6 +646,9 @@ importers:
       '@strudel/mini':
         specifier: workspace:*
         version: link:../packages/mini
+      '@strudel/motion':
+        specifier: workspace:*
+        version: link:../packages/motion
       '@strudel/osc':
         specifier: workspace:*
         version: link:../packages/osc

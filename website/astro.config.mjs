@@ -11,9 +11,14 @@ import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
 // import { visualizer } from 'rollup-plugin-visualizer';
 
-const site = `https://strudel.cc/`; // root url without a path
-const base = '/'; // base path of the strudel site
+// const site = `https://strudel.cc/`; // root url without a path
+// const base = '/'; // base path of the strudel site
+// const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
+
+const site = `https://nkymut.github.io/`; // root url without a path
+const base = 'strudel/'; // base path of the strudel site
 const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
+
 
 // this rehype plugin fixes relative links
 // it works by prepending the base + page path to anchor links

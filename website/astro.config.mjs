@@ -19,7 +19,6 @@ const site = `https://nkymut.github.io/`; // root url without a path
 const base = 'strudel/'; // base path of the strudel site
 const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
 
-
 // this rehype plugin fixes relative links
 // it works by prepending the base + page path to anchor links
 // and by prepending the base path to other relative links starting with /

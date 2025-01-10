@@ -351,6 +351,19 @@ importers:
         specifier: ^5.0.10
         version: 5.4.9(@types/node@22.7.6)(terser@5.36.0)
 
+  packages/mqtt:
+    dependencies:
+      '@strudel/core':
+        specifier: workspace:*
+        version: link:../core
+      paho-mqtt:
+        specifier: ^1.1.0
+        version: 1.1.0
+    devDependencies:
+      vite:
+        specifier: ^5.0.10
+        version: 5.4.9(@types/node@22.7.6)(terser@5.36.0)
+
   packages/osc:
     dependencies:
       '@strudel/core':
@@ -649,6 +662,9 @@ importers:
       '@strudel/motion':
         specifier: workspace:*
         version: link:../packages/motion
+      '@strudel/mqtt':
+        specifier: workspace:*
+        version: link:../packages/mqtt
       '@strudel/osc':
         specifier: workspace:*
         version: link:../packages/osc
@@ -6025,6 +6041,9 @@ packages:
     resolution: {integrity: sha512-+eK3G27SMwsB8kLIuj4h1FUhHtwiEUo21Tw8wNjmvdlpOEr613edv+8FUsTj/4F/VN5ywGE19X18N7CC2EJk6A==}
     engines: {node: ^16.14.0 || >=18.0.0}
     hasBin: true
+
+  paho-mqtt@1.1.0:
+    resolution: {integrity: sha512-KPbL9KAB0ASvhSDbOrZBaccXS+/s7/LIofbPyERww8hM5Ko71GUJQ6Nmg0BWqj8phAIT8zdf/Sd/RftHU9i2HA==}
 
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -14725,6 +14744,8 @@ snapshots:
     transitivePeerDependencies:
       - bluebird
       - supports-color
+
+  paho-mqtt@1.1.0: {}
 
   parent-module@1.0.1:
     dependencies:

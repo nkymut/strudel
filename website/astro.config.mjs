@@ -11,11 +11,7 @@ import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
 // import { visualizer } from 'rollup-plugin-visualizer';
 
-// const site = `https://strudel.cc/`; // root url without a path
-// const base = '/'; // base path of the strudel site
-// const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
-
-const site = `https://nkymut.github.io/`; // root url without a path
+const site = `https:/nkymut.github.io`; // root url without a path
 const base = 'strudel/'; // base path of the strudel site
 const baseNoTrailing = base.endsWith('/') ? base.slice(0, -1) : base;
 
@@ -83,7 +79,7 @@ export default defineConfig({
                 /^https:\/\/cdn\.freesound\.org\/.*/i,
                 /^https:\/\/shabda\.ndre\.gr\/.*/i,
               ].some((regex) => regex.test(url)),
-            handler: 'CacheFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'external-samples',
               expiration: {
@@ -139,6 +135,14 @@ export default defineConfig({
   site,
   base,
   vite: {
+    //plugins: [basicSsl()],
+    server: {
+      host: '0.0.0.0', // Ensures it binds to all network interfaces
+      https: {
+        key: '../../key.pem',
+        cert: '../../cert.pem',
+      },
+    },
     ssr: {
       // Example: Force a broken package to skip SSR processing, if needed
       // external: ['fraction.js'], // https://github.com/infusion/Fraction.js/issues/51

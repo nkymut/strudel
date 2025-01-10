@@ -13,6 +13,7 @@ import { mini, m } from '@strudel/mini/mini.mjs';
 // import euclid from '@strudel/core/euclid.mjs';
 // import '@strudel/midi/midi.mjs';
 import * as tonalHelpers from '@strudel/tonal';
+import * as motionHelpers from '../packages/motion/index.mjs';
 import '@strudel/xen/xen.mjs';
 // import '@strudel/xen/tune.mjs';
 // import '@strudel/core/euclid.mjs';
@@ -136,6 +137,9 @@ strudel.Pattern.prototype._pitchwheel = function () {
 strudel.Pattern.prototype._pianoroll = function () {
   return this;
 };
+strudel.Pattern.prototype._spectrum = function () {
+  return this;
+};
 strudel.Pattern.prototype.markcss = function () {
   return this;
 };
@@ -173,6 +177,7 @@ evalScope(
   tonalHelpers,
   motionHelpers,
   geolocationHelpers,
+  gamepadHelpers,
   /*
   toneHelpers,
   voicingHelpers,

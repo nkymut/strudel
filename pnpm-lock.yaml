@@ -277,6 +277,16 @@ importers:
         specifier: ^5.0.10
         version: 5.4.9(@types/node@22.7.6)(terser@5.36.0)
 
+  packages/gamepad:
+    dependencies:
+      '@strudel/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      vite:
+        specifier: ^5.0.10
+        version: 5.4.9(@types/node@22.7.6)(terser@5.36.0)
+
   packages/hs2js:
     dependencies:
       web-tree-sitter:
@@ -346,6 +356,19 @@ importers:
       '@strudel/core':
         specifier: workspace:*
         version: link:../core
+    devDependencies:
+      vite:
+        specifier: ^5.0.10
+        version: 5.4.9(@types/node@22.7.6)(terser@5.36.0)
+
+  packages/mqtt:
+    dependencies:
+      '@strudel/core':
+        specifier: workspace:*
+        version: link:../core
+      paho-mqtt:
+        specifier: ^1.1.0
+        version: 1.1.0
     devDependencies:
       vite:
         specifier: ^5.0.10
@@ -634,9 +657,9 @@ importers:
       '@strudel/draw':
         specifier: workspace:*
         version: link:../packages/draw
-      '@strudel/geolocation':
+      '@strudel/gamepad':
         specifier: workspace:*
-        version: link:../packages/geolocation
+        version: link:../packages/gamepad
       '@strudel/hydra':
         specifier: workspace:*
         version: link:../packages/hydra
@@ -649,6 +672,9 @@ importers:
       '@strudel/motion':
         specifier: workspace:*
         version: link:../packages/motion
+      '@strudel/mqtt':
+        specifier: workspace:*
+        version: link:../packages/mqtt
       '@strudel/osc':
         specifier: workspace:*
         version: link:../packages/osc
@@ -6026,6 +6052,9 @@ packages:
     engines: {node: ^16.14.0 || >=18.0.0}
     hasBin: true
 
+  paho-mqtt@1.1.0:
+    resolution: {integrity: sha512-KPbL9KAB0ASvhSDbOrZBaccXS+/s7/LIofbPyERww8hM5Ko71GUJQ6Nmg0BWqj8phAIT8zdf/Sd/RftHU9i2HA==}
+
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
@@ -6874,10 +6903,6 @@ packages:
   source-map-generator@0.8.0:
     resolution: {integrity: sha512-psgxdGMwl5MZM9S3FWee4EgsEaIjahYV5AzGnwUvPhWeITz/j6rKpysQHlQ4USdxvINlb8lKfWGIXwfkrgtqkA==}
     engines: {node: '>= 10'}
-
-  source-map-js@1.0.2:
-    resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
-    engines: {node: '>=0.10.0'}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -14726,6 +14751,8 @@ snapshots:
       - bluebird
       - supports-color
 
+  paho-mqtt@1.1.0: {}
+
   parent-module@1.0.1:
     dependencies:
       callsites: 3.1.0
@@ -14941,8 +14968,8 @@ snapshots:
   postcss@8.4.32:
     dependencies:
       nanoid: 3.3.7
-      picocolors: 1.0.0
-      source-map-js: 1.0.2
+      picocolors: 1.1.1
+      source-map-js: 1.2.1
 
   postcss@8.4.47:
     dependencies:
@@ -15771,8 +15798,6 @@ snapshots:
   soundfont2@0.4.0: {}
 
   source-map-generator@0.8.0: {}
-
-  source-map-js@1.0.2: {}
 
   source-map-js@1.2.1: {}
 

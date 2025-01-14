@@ -97,10 +97,20 @@ Pattern.prototype.midi = function (output) {
       }')`,
     );
   }
+  let portName = output;
+  let isController = false;
+  let mapping = {};
+
+  if (typeof output === 'object') {
+    const { port, controller = false, ...remainingProps } = output;
+    portName = port;
+    isController = controller;
+    mapping = remainingProps;
+  }
 
   enableWebMidi({
     onEnabled: ({ outputs }) => {
-      const device = getDevice(output, outputs);
+      const device = getDevice(portName, outputs);
       const otherOutputs = outputs.filter((o) => o.name !== device.name);
       logger(
         `Midi enabled! Using "${device.name}". ${
@@ -117,26 +127,83 @@ Pattern.prototype.midi = function (output) {
       console.log('not enabled');
       return;
     }
-    const device = getDevice(output, WebMidi.outputs);
+    const device = getDevice(portName, WebMidi.outputs);
     hap.ensureObjectValue();
     //magic number to get audio engine to line up, can probably be calculated somehow
     const latencyMs = 34;
     // passing a string with a +num into the webmidi api adds an offset to the current time https://webmidijs.org/api/classes/Output
     const timeOffsetString = `+${getEventOffsetMs(targetTime, currentTime) + latencyMs}`;
     // destructure value
-    let { note, nrpnn, nrpv, ccn, ccv, midichan = 1, midicmd, gain = 1, velocity = 0.9 } = hap.value;
+    let { note, nrpnn, nrpv, ccn, ccv, midichan = 1, midicmd, gain = 1, velocity = 0.9, pc, sysex } = hap.value;
 
     velocity = gain * velocity;
 
     // note off messages will often a few ms arrive late, try to prevent glitching by subtracting from the duration length
     const duration = (hap.duration.valueOf() / cps) * 1000 - 10;
-    if (note != null) {
+    if (note != null && !isController) {
       const midiNumber = typeof note === 'number' ? note : noteToMidi(note);
       const midiNote = new Note(midiNumber, { attack: velocity, duration });
       device.playNote(midiNote, midichan, {
         time: timeOffsetString,
       });
     }
+
+    // Handle mapped parameters if mapping exists
+    if (mapping) {
+      Object.entries(mapping).forEach(([name, paramSpec]) => {
+        if (name in hap.value) {
+          const value = hap.value[name];
+
+          if (paramSpec.cc) {
+            if (typeof value !== 'number') {
+              throw new Error(`Expected ${name} to be a number for CC mapping`);
+            }
+            // ccnLsb will only exist if this is a high-resolution CC message
+            const [ccnMsb, ccnLsb] = Array.isArray(paramSpec.cc) ? paramSpec.cc : [paramSpec.cc];
+
+            const ccvMsb = ccnLsb === undefined ? Math.round(value * 127) : Math.round(value * 16383) >> 7;
+            device.sendControlChange(ccnMsb, ccvMsb, paramSpec.channel || midichan, { time: timeOffsetString });
+
+            if (ccnLsb !== undefined) {
+              const ccvLsb = Math.round(value * 16383) & 0b1111111;
+              device.sendControlChange(ccnLsb, ccvLsb, paramSpec.channel || midichan, { time: timeOffsetString });
+            }
+          } else if (paramSpec.pc !== undefined) {
+            if (typeof value !== 'number' || value < 0 || value > 127) {
+              throw new Error(`Expected ${name} to be a number between 0 and 127 for program change`);
+            }
+            device.sendProgramChange(value, paramSpec.channel || midichan, { time: timeOffsetString });
+          } else if (paramSpec.sysex) {
+            if (!Array.isArray(value)) {
+              throw new Error(`Expected ${name} to be an array of numbers (0-255) for sysex`);
+            }
+            if (!value.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+              throw new Error(`All sysex bytes in ${name} must be integers between 0 and 255`);
+            }
+            device.sendSysex(undefined, value, { time: timeOffsetString });
+          }
+        }
+      });
+    }
+    // Handle program change
+    if (pc !== undefined) {
+      if (typeof pc !== 'number' || pc < 0 || pc > 127) {
+        throw new Error('expected pc (program change) to be a number between 0 and 127');
+      }
+      device.sendProgramChange(pc, midichan, { time: timeOffsetString });
+    }
+    // Handle sysex
+    if (sysex !== undefined) {
+      if (!Array.isArray(sysex)) {
+        throw new Error('expected sysex to be an array of numbers (0-255)');
+      }
+      if (!sysex.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+        throw new Error('all sysex bytes must be integers between 0 and 255');
+      }
+      device.sendSysex(undefined, sysex, { time: timeOffsetString });
+    }
+
+    // Handle control change
     if (ccv !== undefined && ccn !== undefined) {
       if (typeof ccv !== 'number' || ccv < 0 || ccv > 1) {
         throw new Error('expected ccv to be a number between 0 and 1');

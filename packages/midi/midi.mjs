@@ -8,6 +8,7 @@ import * as _WebMidi from 'webmidi';
 import { Pattern, getEventOffsetMs, isPattern, logger, ref } from '@strudel/core';
 import { noteToMidi } from '@strudel/core';
 import { Note } from 'webmidi';
+
 // if you use WebMidi from outside of this package, make sure to import that instance:
 export const { WebMidi } = _WebMidi;
 
@@ -43,13 +44,16 @@ export function enableWebMidi(options = {}) {
       resolve(WebMidi);
       return;
     }
-    WebMidi.enable((err) => {
-      if (err) {
-        reject(err);
-      }
-      onReady?.(WebMidi);
-      resolve(WebMidi);
-    });
+    WebMidi.enable(
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+        onReady?.(WebMidi);
+        resolve(WebMidi);
+      },
+      { sysex: true },
+    );
   });
 }
 
@@ -89,6 +93,12 @@ if (typeof window !== 'undefined') {
   });
 }
 
+/**
+ * MIDI output: Opens a MIDI output port.
+ * @param {string | number} output MIDI device name or index defaulting to 0
+ * @example
+ * note("c4").midichan(1).midi("IAC Driver Bus 1")
+ */
 Pattern.prototype.midi = function (output) {
   if (isPattern(output)) {
     throw new Error(
@@ -101,6 +111,7 @@ Pattern.prototype.midi = function (output) {
   let isController = false;
   let mapping = {};
 
+  //TODO: MIDI mapping related
   if (typeof output === 'object') {
     const { port, controller = false, ...remainingProps } = output;
     portName = port;
@@ -134,7 +145,23 @@ Pattern.prototype.midi = function (output) {
     // passing a string with a +num into the webmidi api adds an offset to the current time https://webmidijs.org/api/classes/Output
     const timeOffsetString = `+${getEventOffsetMs(targetTime, currentTime) + latencyMs}`;
     // destructure value
-    let { note, nrpnn, nrpv, ccn, ccv, midichan = 1, midicmd, gain = 1, velocity = 0.9, pc, sysex } = hap.value;
+    let {
+      note,
+      nrpnn,
+      nrpv,
+      ccn,
+      ccv,
+      midichan = 1,
+      midicmd,
+      midibend,
+      miditouch,
+      polyTouch, //??
+      gain = 1,
+      velocity = 0.9,
+      progNum,
+      sysexid,
+      sysexdata,
+    } = hap.value;
 
     velocity = gain * velocity;
 
@@ -168,39 +195,47 @@ Pattern.prototype.midi = function (output) {
               const ccvLsb = Math.round(value * 16383) & 0b1111111;
               device.sendControlChange(ccnLsb, ccvLsb, paramSpec.channel || midichan, { time: timeOffsetString });
             }
-          } else if (paramSpec.pc !== undefined) {
+          } else if (paramSpec.progNum !== undefined) {
             if (typeof value !== 'number' || value < 0 || value > 127) {
               throw new Error(`Expected ${name} to be a number between 0 and 127 for program change`);
             }
             device.sendProgramChange(value, paramSpec.channel || midichan, { time: timeOffsetString });
-          } else if (paramSpec.sysex) {
-            if (!Array.isArray(value)) {
-              throw new Error(`Expected ${name} to be an array of numbers (0-255) for sysex`);
-            }
-            if (!value.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
-              throw new Error(`All sysex bytes in ${name} must be integers between 0 and 255`);
-            }
-            device.sendSysex(undefined, value, { time: timeOffsetString });
           }
         }
       });
     }
+
     // Handle program change
-    if (pc !== undefined) {
-      if (typeof pc !== 'number' || pc < 0 || pc > 127) {
+    if (progNum !== undefined) {
+      if (typeof progNum !== 'number' || progNum < 0 || progNum > 127) {
         throw new Error('expected pc (program change) to be a number between 0 and 127');
       }
-      device.sendProgramChange(pc, midichan, { time: timeOffsetString });
+      device.sendProgramChange(progNum, midichan, { time: timeOffsetString });
     }
     // Handle sysex
-    if (sysex !== undefined) {
-      if (!Array.isArray(sysex)) {
+    // sysex data is consist of 2 arrays, first is sysexid, second is sysexdata
+    // sysexid is a manufacturer id it is either a number or an array of 3 numbers.
+    // list of manufacturer ids can be found here : https://midi.org/sysexidtable
+    // if sysexid is an array the first byte is 0x00
+
+    if (sysexid !== undefined && sysexdata !== undefined) {
+      if (Array.isArray(sysexid)) {
+        if (!sysexid.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+          throw new Error('all sysexid bytes must be integers between 0 and 255');
+        }
+      } else if (!Number.isInteger(sysexid) || sysexid < 0 || sysexid > 255) {
+        throw new Error('A:sysexid must be an number between 0 and 255 or an array of such integers');
+      }
+
+      if (!Array.isArray(sysexdata)) {
         throw new Error('expected sysex to be an array of numbers (0-255)');
       }
-      if (!sysex.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+      if (!sysexdata.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
         throw new Error('all sysex bytes must be integers between 0 and 255');
       }
-      device.sendSysex(undefined, sysex, { time: timeOffsetString });
+
+      device.sendSysex(sysexid, sysexdata, { time: timeOffsetString });
+      //device.sendSysex(0x43, [0x79, 0x09, 0x11, 0x0A, 0x00,0x1e], { time: timeOffsetString });
     }
 
     // Handle control change
@@ -214,6 +249,39 @@ Pattern.prototype.midi = function (output) {
       const scaled = Math.round(ccv * 127);
       device.sendControlChange(ccn, scaled, midichan, { time: timeOffsetString });
     }
+
+    // Handle NRPN non-registered parameter number
+    if (nrpnn !== undefined && nrpv !== undefined) {
+      if (Array.isArray(nrpnn)) {
+        if (!nrpnn.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+          throw new Error('all nrpnn bytes must be integers between 0 and 255');
+        }
+      } else if (!Number.isInteger(nrpv) || nrpv < 0 || nrpv > 255) {
+        throw new Error('A:sysexid must be an number between 0 and 255 or an array of such integers');
+      }
+
+      device.sendNRPN(nrpnn, nrpv, midichan, { time: timeOffsetString });
+    }
+
+    // Handle midibend
+    if (midibend !== undefined) {
+      if (typeof midibend == 'number' || midibend < 1 || midibend > -1) {
+        device.sendPitchBend(midibend, midichan, { time: timeOffsetString });
+      } else {
+        throw new Error('expected midibend to be a number between 1 and -1');
+      }
+    }
+
+    // Handle miditouch
+    if (miditouch !== undefined) {
+      if (typeof miditouch == 'number' || miditouch < 1 || miditouch > 0) {
+        device.sendKeyAfterTouch(miditouch, midichan, { time: timeOffsetString });
+      } else {
+        throw new Error('expected miditouch to be a number between 1 and 0');
+      }
+    }
+
+    // Handle midicmd
     if (hap.whole.begin + 0 === 0) {
       // we need to start here because we have the timing info
       device.sendStart({ time: timeOffsetString });
@@ -226,6 +294,24 @@ Pattern.prototype.midi = function (output) {
       device.sendStop({ time: timeOffsetString });
     } else if (['continue'].includes(midicmd)) {
       device.sendContinue({ time: timeOffsetString });
+    } else if (Array.isArray(midicmd)) {
+      if (midicmd[0] === 'progNum') {
+        if (typeof midicmd[1] !== 'number' || midicmd[1] < 0 || midicmd[1] > 127) {
+          throw new Error('expected pc (program change) to be a number between 0 and 127');
+        } else {
+          device.sendProgramChange(midicmd[1], midichan, { time: timeOffsetString });
+        }
+      } else if (midicmd[0] === 'cc') {
+        if (midicmd.length === 2) {
+          if (typeof midicmd[0] !== 'number' || midicmd[0] < 0 || midicmd[0] > 127) {
+            throw new Error('expected ccn (control change number) to be a number between 0 and 127');
+          }
+          if (typeof midicmd[1] !== 'number' || midicmd[1] < 0 || midicmd[1] > 127) {
+            throw new Error('expected ccv (control change value) to be a number between 0 and 127');
+          }
+          device.sendControlChange(midicmd[0], midicmd[1], midichan, { time: timeOffsetString });
+        }
+      }
     }
   });
 };
@@ -233,6 +319,14 @@ Pattern.prototype.midi = function (output) {
 let listeners = {};
 const refs = {};
 
+/**
+ * MIDI input: Opens a MIDI input port to receive MIDI control change messages.
+ * @param {string | number} input MIDI device name or index defaulting to 0
+ * @returns {Function}
+ * @example
+ * let cc = await midin("IAC Driver Bus 1")
+ * note("c a f e").lpf(cc(0).range(0, 1000)).lpq(cc(1).range(0, 10)).sound("sawtooth")
+ */
 export async function midin(input) {
   if (isPattern(input)) {
     throw new Error(

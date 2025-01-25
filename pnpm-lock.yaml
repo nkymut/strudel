@@ -364,6 +364,19 @@ importers:
         specifier: ^5.0.10
         version: 5.4.9(@types/node@22.7.6)(terser@5.36.0)
 
+  packages/mqtt:
+    dependencies:
+      '@strudel/core':
+        specifier: workspace:*
+        version: link:../core
+      paho-mqtt:
+        specifier: ^1.1.0
+        version: 1.1.0
+    devDependencies:
+      vite:
+        specifier: ^5.0.10
+        version: 5.4.9(@types/node@22.7.6)(terser@5.36.0)
+
   packages/osc:
     dependencies:
       '@strudel/core':

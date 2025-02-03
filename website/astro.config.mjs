@@ -9,6 +9,7 @@ import rehypeUrls from 'rehype-urls';
 
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 // import { visualizer } from 'rollup-plugin-visualizer';
 
 const site = `https://strudel.cc/`; // root url without a path
@@ -135,6 +136,7 @@ export default defineConfig({
   site,
   base,
   vite: {
+    plugins: [basicSsl()],
     ssr: {
       // Example: Force a broken package to skip SSR processing, if needed
       // external: ['fraction.js'], // https://github.com/infusion/Fraction.js/issues/51

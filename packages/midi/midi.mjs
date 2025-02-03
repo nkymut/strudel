@@ -311,6 +311,8 @@ Pattern.prototype.midi = function (output) {
           }
           device.sendControlChange(midicmd[0], midicmd[1], midichan, { time: timeOffsetString });
         }
+      } else if (midicmd[0] === 'sysex') {
+        device.sendSysex(sysexid, sysexdata, { time: timeOffsetString });
       }
     }
   });

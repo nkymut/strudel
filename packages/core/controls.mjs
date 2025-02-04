@@ -1764,9 +1764,7 @@ export const { polyTouch } = registerControl('polyTouch');
  * // Modulate CC 1 with sine wave
  * ccv_pat(1, sine.range(0,127)).midicmd()
  */
-export const ccv_pat = register('ccv_pat', (ccNum, valuePat) => 
-  valuePat.fmap(v => `cc:${ccNum}:${Math.round(v)}`)
-);
+export const ccv_pat = register('ccv_pat', (ccNum, valuePat) => valuePat.fmap((v) => `cc:${ccNum}:${Math.round(v)}`));
 
 /**
  * Creates a program change command pattern from a value pattern
@@ -1776,6 +1774,4 @@ export const ccv_pat = register('ccv_pat', (ccNum, valuePat) =>
  * // Change programs 1, 2, 3 in sequence
  * prog_pat("1 2 3").midicmd()
  */
-export const prog_pat = register('prog_pat', (valuePat) =>
-  valuePat.fmap(v => `progNum:${Math.round(v)}`)
-);
+export const prog_pat = register('prog_pat', (valuePat) => valuePat.fmap((v) => `progNum:${Math.round(v)}`));

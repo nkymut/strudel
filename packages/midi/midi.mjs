@@ -468,8 +468,6 @@ Pattern.prototype.midi = function (output) {
       });
     }
 
-    
-
     // Handle program change
     if (progNum !== undefined) {
       if (typeof progNum !== 'number' || progNum < 0 || progNum > 127) {

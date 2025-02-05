@@ -26,11 +26,11 @@ OUTPUT:
 - `sysex` - Sends MIDI System Exclusive messages (id: number 0-127 or array of bytes 0-127, data: array of bytes 0-127)
 - `sysexid` - Sets MIDI System Exclusive ID (number 0-127 or array of bytes 0-127)
 - `sysexdata` - Sets MIDI System Exclusive data (array of bytes 0-127)
-- `nrpnn` - Sets MIDI NRPN non-registered parameter number (array of bytes 0-127)
-- `nrpv` - Sets MIDI NRPN non-registered parameter value (0-127)
-- `midicmd` - Sends MIDI system real-time messages to control timing and transport on MIDI devices.
 - `midibend` - Sets MIDI pitch bend (-1 - 1)
 - `miditouch` - Sets MIDI key after touch (0-1)
+- `midicmd` - Sends MIDI system real-time messages to control timing and transport on MIDI devices.
+- `nrpnn` - Sets MIDI NRPN non-registered parameter number (array of bytes 0-127)
+- `nrpv` - Sets MIDI NRPN non-registered parameter value (0-127)
 
 
 INPUT:
@@ -55,25 +55,6 @@ In the console, you will see a log of the available MIDI devices as soon as you 
 ### midichan(number)
 
 Selects the MIDI channel to use. If not used, `.midi` will use channel 1 by default.
-
-### midicmd
-
-`midicmd` sends MIDI system real-time messages to control timing and transport on MIDI devices.
-
-It supports the following commands:
-
-- `clock`/`midiClock` - Sends MIDI timing clock messages
-- `start` - Sends MIDI start message
-- `stop` - Sends MIDI stop message
-- `continue` - Sends MIDI continue message
-
-```javascript
-// You can control the clock with a pattern and ensure it starts in sync when the repl begins.
-// Note: It might act unexpectedly if MIDI isn't set up initially.
-stack(
-  midicmd("clock*48,<start stop>/2").midi('IAC Driver') 
-)
-```
 
 ### control, ccn && ccv
 
@@ -103,7 +84,7 @@ Program change values should be numbers between 0 and 127.
 
 ```javascript
 // Play notes while changing programs
-note("c3 e3 g3").pc("<0 1 2>").midi()
+note("c3 e3 g3").progNum("<0 1 2>").midi()
 ```
 
 Program change messages are useful for switching between different instrument sounds or presets during a performance. 
@@ -137,4 +118,40 @@ Consult your device's MIDI implementation guide for details on supported SysEx m
 $: note("c d e f e d c").midibend(sine.slow(4).range(-0.4,0.4)).midi();
 $: note("c d e f e d c").miditouch(sine.slow(4).range(0,1)).midi();
 
+```
+
+### midicmd
+
+`midicmd` sends MIDI system real-time messages to control timing and transport on MIDI devices.
+
+It supports the following commands:
+
+- `clock`/`midiClock` - Sends MIDI timing clock messages
+- `start` - Sends MIDI start message
+- `stop` - Sends MIDI stop message
+- `continue` - Sends MIDI continue message
+
+```javascript
+// You can control the clock with a pattern and ensure it starts in sync when the repl begins.
+// Note: It might act unexpectedly if MIDI isn't set up initially.
+stack(
+  midicmd("clock*48,<start stop>/2").midi('IAC Driver') 
+)
+```
+
+`midicmd` also supports sending control change, program change and sysex messages.
+
+- `cc` - sends MIDI control change messages.
+- `progNum` - sends MIDI program change messages.
+- `sysex` - sends MIDI system exclusive messages.
+
+```javascript
+stack(
+  // "cc:ccn:ccv"
+  midicmd("cc:74:1").midi('IAC Driver'),
+  // "progNum:progNum"
+  midicmd("progNum:1").midi('IAC Driver'),
+  // "sysex:[sysexid]:[sysexdata]"
+  midicmd("sysex:[0x43]:[0x79:0x09:0x11:0x0A:0x00:0x00]").midi('IAC Driver')
+)
 ```

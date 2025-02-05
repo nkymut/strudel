@@ -756,11 +756,11 @@ importers:
         version: 8.0.13
     devDependencies:
       '@vite-pwa/astro':
-        specifier: ^0.5.0
-        version: 0.5.0(astro@5.1.9(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@2.79.2)(terser@5.37.0)(typescript@5.7.3)(yaml@2.7.0))(vite-plugin-pwa@0.21.1(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))(workbox-build@7.0.0(@types/babel__core@7.20.5))(workbox-window@7.3.0))
+        specifier: ^0.2.0
+        version: 0.2.0(astro@5.1.9(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@2.79.2)(terser@5.37.0)(typescript@5.7.3)(yaml@2.7.0))(vite-plugin-pwa@0.21.1(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))(workbox-build@7.0.0(@types/babel__core@7.20.5))(workbox-window@7.3.0))
       '@vitejs/plugin-basic-ssl':
         specifier: ^1.2.0
-        version: 1.2.0(vite@5.4.9(@types/node@20.16.12)(terser@5.36.0))
+        version: 1.2.0(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))
       html-escaper:
         specifier: ^3.0.3
         version: 3.0.3
@@ -2805,15 +2805,11 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
-  '@vite-pwa/astro@0.5.0':
-    resolution: {integrity: sha512-Yd3Pug/c1EUQJXWvzYh6eTtoqzmSKcdCqWCcNquZeaD13tLWpBb2FIPJ4HMULVY6+GfxMvrT+OBuMrbHQCvftw==}
+  '@vite-pwa/astro@0.2.0':
+    resolution: {integrity: sha512-1MBNbRo9I9fp9sUSoaQfI/xHVDRKRoUsWETDJMVoKoctZYfm4fZgb7EN76WJdejW/vup+3+uoFlDMCnca+vZzA==}
     peerDependencies:
-      '@vite-pwa/assets-generator': ^0.2.6
-      astro: ^1.6.0 || ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
-      vite-plugin-pwa: '>=0.21.1 <1'
-    peerDependenciesMeta:
-      '@vite-pwa/assets-generator':
-        optional: true
+      astro: ^1.6.0 || ^2.0.0 || ^3.0.0 || ^4.0.0
+      vite-plugin-pwa: '>=0.17.3 <1'
 
   '@vitejs/plugin-basic-ssl@1.2.0':
     resolution: {integrity: sha512-mkQnxTkcldAzIsomk1UuLfAu9n+kpQ3JbHcpCp7d2Oo6ITtji8pHS3QToOWjhPFvNQSnhlkAjmGbhv2QvwO/7Q==}
@@ -7514,6 +7510,7 @@ packages:
 
   workbox-google-analytics@7.0.0:
     resolution: {integrity: sha512-MEYM1JTn/qiC3DbpvP2BVhyIH+dV/5BjHk756u9VbwuAhu0QHyKscTnisQuz21lfRpOwiS9z4XdqeVAKol0bzg==}
+    deprecated: It is not compatible with newer versions of GA starting with v4, as long as you are using GAv3 it should be ok, but the package is not longer being maintained
 
   workbox-navigation-preload@7.0.0:
     resolution: {integrity: sha512-juWCSrxo/fiMz3RsvDspeSLGmbgC0U9tKqcUPZBCf35s64wlaLXyn2KdHHXVQrb2cqF7I0Hc9siQalainmnXJA==}
@@ -10180,10 +10177,14 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vite-pwa/astro@0.5.0(astro@5.1.9(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@2.79.2)(terser@5.37.0)(typescript@5.7.3)(yaml@2.7.0))(vite-plugin-pwa@0.21.1(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))(workbox-build@7.0.0(@types/babel__core@7.20.5))(workbox-window@7.3.0))':
+  '@vite-pwa/astro@0.2.0(astro@5.1.9(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@2.79.2)(terser@5.37.0)(typescript@5.7.3)(yaml@2.7.0))(vite-plugin-pwa@0.21.1(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))(workbox-build@7.0.0(@types/babel__core@7.20.5))(workbox-window@7.3.0))':
     dependencies:
       astro: 5.1.9(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@2.79.2)(terser@5.37.0)(typescript@5.7.3)(yaml@2.7.0)
       vite-plugin-pwa: 0.21.1(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))(workbox-build@7.0.0(@types/babel__core@7.20.5))(workbox-window@7.3.0)
+
+  '@vitejs/plugin-basic-ssl@1.2.0(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))':
+    dependencies:
+      vite: 6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0)
 
   '@vitejs/plugin-react@4.3.4(vite@6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))':
     dependencies:

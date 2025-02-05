@@ -84,6 +84,7 @@ export const SIDEBAR: Sidebar = {
       { text: 'Music metadata', link: 'learn/metadata' },
       { text: 'CSound', link: 'learn/csound' },
       { text: 'Hydra', link: 'learn/hydra' },
+      { text: 'Device Motion', link: 'learn/devicemotion' },
     ],
     'Pattern Functions': [
       { text: 'Introduction', link: 'functions/intro' },
@@ -100,6 +101,7 @@ export const SIDEBAR: Sidebar = {
       { text: 'Coding syntax', link: 'learn/code' },
       { text: 'Pitch', link: 'understand/pitch' },
       { text: 'Cycles', link: 'understand/cycles' },
+      { text: 'Voicings', link: 'understand/voicings' },
       { text: 'Pattern Alignment', link: 'technical-manual/alignment' },
       { text: 'Strudel vs Tidal', link: 'learn/strudel-vs-tidal' },
     ],

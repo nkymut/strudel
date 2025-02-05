@@ -47,12 +47,16 @@ export function createParam(names) {
   return func;
 }
 
+// maps control alias names to the "main" control name
+const controlAlias = new Map();
+
 export function registerControl(names, ...aliases) {
   const name = Array.isArray(names) ? names[0] : names;
   let bag = {};
   bag[name] = createParam(names);
   aliases.forEach((alias) => {
     bag[alias] = bag[name];
+    controlAlias.set(alias, name);
     Pattern.prototype[alias] = Pattern.prototype[name];
   });
   return bag;
@@ -1509,6 +1513,16 @@ export const { scram } = registerControl('scram');
 export const { binshift } = registerControl('binshift');
 export const { hbrick } = registerControl('hbrick');
 export const { lbrick } = registerControl('lbrick');
+export const { midichan } = registerControl('midichan');
+export const { midimap } = registerControl('midimap');
+export const { midiport } = registerControl('midiport');
+export const { control } = registerControl('control');
+export const { ccn } = registerControl('ccn');
+export const { ccv } = registerControl('ccv');
+export const { polyTouch } = registerControl('polyTouch');
+export const { midibend } = registerControl('midibend');
+export const { miditouch } = registerControl('miditouch');
+export const { ctlNum } = registerControl('ctlNum');
 export const { frameRate } = registerControl('frameRate');
 export const { frames } = registerControl('frames');
 export const { hours } = registerControl('hours');
@@ -1775,3 +1789,26 @@ export const ccv_pat = register('ccv_pat', (ccNum, valuePat) => valuePat.fmap((v
  * prog_pat("1 2 3").midicmd()
  */
 export const prog_pat = register('prog_pat', (valuePat) => valuePat.fmap((v) => `progNum:${Math.round(v)}`));
+
+export const getControlName = (alias) => {
+  if (controlAlias.has(alias)) {
+    return controlAlias.get(alias);
+  }
+  return alias;
+};
+
+/**
+ * Sets properties in a batch.
+ *
+ * @name as
+ * @param {Array} mapping the control names that are set
+ * @example
+ * "c:.5 a:1 f:.25 e:.8".as("note:clip")
+ */
+export const as = register('as', (mapping, pat) => {
+  return pat.fmap((v) => {
+    v = Array.isArray(v) ? v : [v];
+    v = Object.fromEntries(mapping.map((prop, i) => [getControlName(prop), v[i]]));
+    return v;
+  });
+});

@@ -231,7 +231,6 @@ function sendCC(ccn, ccv, device, midichan, timeOffsetString) {
   device.sendControlChange(ccn, scaled, midichan, { time: timeOffsetString });
 }
 
-
 /**
  * MIDI output: Opens a MIDI output port.
  * @param {string | number} output MIDI device name or index defaulting to 0
@@ -389,36 +388,12 @@ Pattern.prototype.midi = function (output) {
       } else {
         throw new Error('expected midibend to be a number between 1 and -1');
       }
-      const scaled = Math.round(ccv * 127);
-      device.sendControlChange(ccn, scaled, midichan, { time: timeOffsetString });
-    }
-
-    // Handle NRPN non-registered parameter number
-    if (nrpnn !== undefined && nrpv !== undefined) {
-      if (Array.isArray(nrpnn)) {
-        if (!nrpnn.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
-          throw new Error('all nrpnn bytes must be integers between 0 and 255');
-        }
-      } else if (!Number.isInteger(nrpv) || nrpv < 0 || nrpv > 255) {
-        throw new Error('A:sysexid must be an number between 0 and 255 or an array of such integers');
-      }
-
-      device.sendNRPN(nrpnn, nrpv, midichan, { time: timeOffsetString });
-    }
-
-    // Handle midibend
-    if (midibend !== undefined) {
-      if (typeof midibend == 'number' || midibend < 1 || midibend > -1) {
-        device.sendPitchBend(midibend, midichan, { time: timeOffsetString });
-      } else {
-        throw new Error('expected midibend to be a number between 1 and -1');
-      }
     }
 
     // Handle miditouch
     if (miditouch !== undefined) {
       if (typeof miditouch == 'number' || miditouch < 1 || miditouch > 0) {
-        device.sendChannelAfterTouch(miditouch, midichan, { time: timeOffsetString });
+        device.sendChannelAftertouch(miditouch, midichan, { time: timeOffsetString });
       } else {
         throw new Error('expected miditouch to be a number between 1 and 0');
       }

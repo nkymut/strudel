@@ -6,7 +6,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 import * as _WebMidi from 'webmidi';
 import { Pattern, getEventOffsetMs, isPattern, logger, ref } from '@strudel/core';
-import { noteToMidi, getControlName } from '@strudel/core';
+import { noteToMidi, getControlName, registerControl } from '@strudel/core';
 import { Note } from 'webmidi';
 
 // if you use WebMidi from outside of this package, make sure to import that instance:
@@ -100,10 +100,23 @@ export const midicontrolMap = new Map();
 function unifyMapping(mapping) {
   return Object.fromEntries(
     Object.entries(mapping).map(([key, mapping]) => {
+      // Convert number to object with ccn property
       if (typeof mapping === 'number') {
         mapping = { ccn: mapping };
       }
-      return [getControlName(key), mapping];
+
+      const controlName = getControlName(key);
+
+      // Register the control in the midicontrolMap if it doesn't exist in
+      if (!midicontrolMap.has(controlName)) {
+        try {
+          registerControl(controlName);
+        } catch (err) {
+          logger.error(`Failed to register control '${controlName}': ${err.message}`);
+          throw err;
+        }
+      }
+      return [controlName, mapping];
     }),
   );
 }
@@ -169,37 +182,6 @@ export async function midimaps(map) {
 // registry for midi sounds, converting sound names to controls
 export const midisoundMap = new Map();
 
-/**
- * Maps a sound name to a set of controls:
- * @example
- * midisounds({ bd: { note: 'c2' } })
- * $: s("bd").midi()
- * @example
- * // notes can be set directly to simplify typical midi drum kit mappings
- * midisounds({ bd: 'c2', rim: 'c#2' })
- * $: s("bd rim").midi()
- **/
-export async function midisounds(map) {
-  if (typeof map === 'object') {
-    Object.entries(map).forEach(([name, mapping]) => midisoundMap.set(name, mapping));
-  }
-}
-
-function applyMidisounds(hapValue) {
-  const { s } = hapValue;
-  if (!midisoundMap.has(s)) {
-    return;
-  }
-  let controls = midisoundMap.get(hapValue.s);
-  if (Array.isArray(controls)) {
-    controls = controls[hapValue.n || 0];
-  }
-  if (typeof controls === 'string') {
-    controls = { note: controls };
-  }
-  Object.assign(hapValue, controls);
-}
-
 // normalizes the given value from the given range and exponent
 function normalize(value = 0, min = 0, max = 1, exp = 1) {
   if (min === max) {
@@ -209,7 +191,10 @@ function normalize(value = 0, min = 0, max = 1, exp = 1) {
   normalized = Math.min(1, Math.max(0, normalized));
   return Math.pow(normalized, exp);
 }
+
 function mapCC(mapping, value) {
+  console.log('mapping', mapping);
+  console.log('value', value);
   return Object.keys(value)
     .filter((key) => !!mapping[getControlName(key)])
     .map((key) => {
@@ -229,6 +214,62 @@ function sendCC(ccn, ccv, device, midichan, timeOffsetString) {
   }
   const scaled = Math.round(ccv * 127);
   device.sendControlChange(ccn, scaled, midichan, { time: timeOffsetString });
+}
+
+// sends a program change message to the given device on the given channel
+function sendProgramChange(progNum, device, midichan, timeOffsetString) {
+  if (typeof progNum !== 'number' || progNum < 0 || progNum > 127) {
+    throw new Error('expected progNum (program change) to be a number between 0 and 127');
+  }
+  device.sendProgramChange(progNum, midichan, { time: timeOffsetString });
+}
+
+// sends a sysex message to the given device on the given channel
+function sendSysex(sysexid, sysexdata, device, timeOffsetString) {
+  if (Array.isArray(sysexid)) {
+    if (!sysexid.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+      throw new Error('all sysexid bytes must be integers between 0 and 255');
+    }
+  } else if (!Number.isInteger(sysexid) || sysexid < 0 || sysexid > 255) {
+    throw new Error('A:sysexid must be an number between 0 and 255 or an array of such integers');
+  }
+
+  if (!Array.isArray(sysexdata)) {
+    throw new Error('expected sysex to be an array of numbers (0-255)');
+  }
+  if (!sysexdata.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+    throw new Error('all sysex bytes must be integers between 0 and 255');
+  }
+  device.sendSysex(sysexid, sysexdata, { time: timeOffsetString });
+}
+
+// sends a NRPN message to the given device on the given channel
+function sendNRPN(nrpnn, nrpv, device, midichan, timeOffsetString) {
+  if (Array.isArray(nrpnn)) {
+    if (!nrpnn.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
+      throw new Error('all nrpnn bytes must be integers between 0 and 255');
+    }
+  } else if (!Number.isInteger(nrpv) || nrpv < 0 || nrpv > 255) {
+    throw new Error('A:sysexid must be an number between 0 and 255 or an array of such integers');
+  }
+
+  device.sendNRPN(nrpnn, nrpv, midichan, { time: timeOffsetString });
+}
+
+// sends a pitch bend message to the given device on the given channel
+function sendPitchBend(midibend, device, midichan, timeOffsetString) {
+  if (typeof midibend !== 'number' || midibend < -1 || midibend > 1) {
+    throw new Error('expected midibend to be a number between -1 and 1');
+  }
+  device.sendPitchBend(midibend, midichan, { time: timeOffsetString });
+}
+
+// sends a channel aftertouch message to the given device on the given channel
+function sendAftertouch(miditouch, device, midichan, timeOffsetString) {
+  if (typeof miditouch !== 'number' || miditouch < 0 || miditouch > 1) {
+    throw new Error('expected miditouch to be a number between 0 and 1');
+  }
+  device.sendChannelAftertouch(miditouch, midichan, { time: timeOffsetString });
 }
 
 /**
@@ -281,8 +322,6 @@ Pattern.prototype.midi = function (output) {
     const latencyMs = 34;
     // passing a string with a +num into the webmidi api adds an offset to the current time https://webmidijs.org/api/classes/Output
     const timeOffsetString = `+${getEventOffsetMs(targetTime, currentTime) + latencyMs}`;
-    // convert s to midisounds preset (if set)
-    applyMidisounds(hap.value);
 
     // destructure value
     let {
@@ -316,6 +355,7 @@ Pattern.prototype.midi = function (output) {
     velocity = gain * velocity;
     // if midimap is set, send a cc messages from defined controls
     if (midicontrolMap.has(midimap)) {
+      console.log('midimap', midimap);
       const ccs = mapCC(midicontrolMap.get(midimap), hap.value);
       ccs.forEach(({ ccn, ccv }) => sendCC(ccn, ccv, device, midichan, timeOffsetString));
     }
@@ -332,11 +372,9 @@ Pattern.prototype.midi = function (output) {
 
     // Handle program change
     if (progNum !== undefined) {
-      if (typeof progNum !== 'number' || progNum < 0 || progNum > 127) {
-        throw new Error('expected pc (program change) to be a number between 0 and 127');
-      }
-      device.sendProgramChange(progNum, midichan, { time: timeOffsetString });
+      sendProgramChange(progNum, device, midichan, timeOffsetString);
     }
+
     // Handle sysex
     // sysex data is consist of 2 arrays, first is sysexid, second is sysexdata
     // sysexid is a manufacturer id it is either a number or an array of 3 numbers.
@@ -344,23 +382,7 @@ Pattern.prototype.midi = function (output) {
     // if sysexid is an array the first byte is 0x00
 
     if (sysexid !== undefined && sysexdata !== undefined) {
-      if (Array.isArray(sysexid)) {
-        if (!sysexid.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
-          throw new Error('all sysexid bytes must be integers between 0 and 255');
-        }
-      } else if (!Number.isInteger(sysexid) || sysexid < 0 || sysexid > 255) {
-        throw new Error('A:sysexid must be an number between 0 and 255 or an array of such integers');
-      }
-
-      if (!Array.isArray(sysexdata)) {
-        throw new Error('expected sysex to be an array of numbers (0-255)');
-      }
-      if (!sysexdata.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
-        throw new Error('all sysex bytes must be integers between 0 and 255');
-      }
-
-      device.sendSysex(sysexid, sysexdata, { time: timeOffsetString });
-      //device.sendSysex(0x43, [0x79, 0x09, 0x11, 0x0A, 0x00,0x1e], { time: timeOffsetString });
+      sendSysex(sysexid, sysexdata, device, timeOffsetString);
     }
 
     // Handle control change
@@ -370,33 +392,17 @@ Pattern.prototype.midi = function (output) {
 
     // Handle NRPN non-registered parameter number
     if (nrpnn !== undefined && nrpv !== undefined) {
-      if (Array.isArray(nrpnn)) {
-        if (!nrpnn.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
-          throw new Error('all nrpnn bytes must be integers between 0 and 255');
-        }
-      } else if (!Number.isInteger(nrpv) || nrpv < 0 || nrpv > 255) {
-        throw new Error('A:sysexid must be an number between 0 and 255 or an array of such integers');
-      }
-
-      device.sendNRPN(nrpnn, nrpv, midichan, { time: timeOffsetString });
+      sendNRPN(nrpnn, nrpv, device, midichan, timeOffsetString);
     }
 
     // Handle midibend
     if (midibend !== undefined) {
-      if (typeof midibend == 'number' || midibend < 1 || midibend > -1) {
-        device.sendPitchBend(midibend, midichan, { time: timeOffsetString });
-      } else {
-        throw new Error('expected midibend to be a number between 1 and -1');
-      }
+      sendPitchBend(midibend, device, midichan, timeOffsetString);
     }
 
     // Handle miditouch
     if (miditouch !== undefined) {
-      if (typeof miditouch == 'number' || miditouch < 1 || miditouch > 0) {
-        device.sendChannelAftertouch(miditouch, midichan, { time: timeOffsetString });
-      } else {
-        throw new Error('expected miditouch to be a number between 1 and 0');
-      }
+      sendAftertouch(miditouch, device, midichan, timeOffsetString);
     }
 
     // Handle midicmd
@@ -414,35 +420,15 @@ Pattern.prototype.midi = function (output) {
       device.sendContinue({ time: timeOffsetString });
     } else if (Array.isArray(midicmd)) {
       if (midicmd[0] === 'progNum') {
-        if (typeof midicmd[1] !== 'number' || midicmd[1] < 0 || midicmd[1] > 127) {
-          throw new Error('expected pc (program change) to be a number between 0 and 127');
-        } else {
-          device.sendProgramChange(midicmd[1], midichan, { time: timeOffsetString });
-        }
+        sendProgramChange(midicmd[1], device, midichan, timeOffsetString);
       } else if (midicmd[0] === 'cc') {
         if (midicmd.length === 2) {
-          if (typeof midicmd[0] !== 'number' || midicmd[0] < 0 || midicmd[0] > 127) {
-            throw new Error('expected ccn (control change number) to be a number between 0 and 127');
-          }
-          if (typeof midicmd[1] !== 'number' || midicmd[1] < 0 || midicmd[1] > 127) {
-            throw new Error('expected ccv (control change value) to be a number between 0 and 127');
-          }
-          device.sendControlChange(midicmd[0], midicmd[1], midichan, { time: timeOffsetString });
+          sendCC(midicmd[0], midicmd[1] / 127, device, midichan, timeOffsetString);
         }
       } else if (midicmd[0] === 'sysex') {
         if (midicmd.length === 3) {
           const [_, id, data] = midicmd;
-          if (Array.isArray(id)) {
-            if (!id.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
-              throw new Error('all sysex id bytes must be integers between 0 and 255');
-            }
-          } else if (!Number.isInteger(id) || id < 0 || id > 255) {
-            throw new Error('sysex id must be a number between 0 and 255 or an array of such integers');
-          }
-          if (!Array.isArray(data) || !data.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)) {
-            throw new Error('sysex data must be an array of integers between 0 and 255');
-          }
-          device.sendSysex(id, data, { time: timeOffsetString });
+          sendSysex(id, data, device, timeOffsetString);
         }
       }
     }

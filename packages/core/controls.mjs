@@ -1513,8 +1513,7 @@ export const { scram } = registerControl('scram');
 export const { binshift } = registerControl('binshift');
 export const { hbrick } = registerControl('hbrick');
 export const { lbrick } = registerControl('lbrick');
-export const { midimap } = registerControl('midimap');
-export const { midiport } = registerControl('midiport');
+
 export const { frameRate } = registerControl('frameRate');
 export const { frames } = registerControl('frames');
 export const { hours } = registerControl('hours');
@@ -1622,6 +1621,16 @@ export const ar = register('ar', (t, pat) => {
  * note("c4").midichan(1).midi()
  */
 export const { midichan } = registerControl('midichan');
+
+export const { midimap } = registerControl('midimap');
+
+/**
+ * MIDI port: Sets the MIDI port for the event.
+ *
+ * @name midiport
+ * @param {number | Pattern} port MIDI port
+ */
+export const { midiport } = registerControl('midiport');
 
 /**
  * MIDI command: Sends a MIDI command message.

@@ -1622,12 +1622,6 @@ export const ar = register('ar', (t, pat) => {
  */
 export const { midichan } = registerControl('midichan');
 
-/**
- * MIDI map: Sets the MIDI map for the event.
- *
- * @name midimap
- * @param {Object} map MIDI map
- */
 export const { midimap } = registerControl('midimap');
 
 /**
@@ -1645,6 +1639,20 @@ export const { midiport } = registerControl('midiport');
  * @param {number | Pattern} command MIDI command
  * @example
  * midicmd("clock*48,<start stop>/2").midi()
+ */
+/**
+ * MIDI command: Sends MIDI system commands like clock, start, stop, continue, or control changes.
+ * @name midicmd
+ * @param {string} command MIDI command to send
+ * @example
+ * // Send MIDI clock
+ * midicmd("clock")
+ * @example
+ * // Send program change
+ * midicmd("progNum:64")
+ * @example
+ * // Send control change
+ * midicmd("cc:7:100")
  */
 export const { midicmd } = registerControl('midicmd');
 
@@ -1758,6 +1766,30 @@ export const { miditouch } = registerControl('miditouch');
 
 // TODO: what is this?
 export const { polyTouch } = registerControl('polyTouch');
+
+/**
+ * Creates a MIDI CC command pattern from a value pattern
+ * @name ccv_pat
+ * @param {number} ccNum The CC number to use
+ * @param {Pattern} valuePat The pattern of values to send
+ * @example
+ * // Send CC 7 with values 1, 2, 3 in sequence
+ * ccv_pat(7, "1 2 3").midicmd()
+ * @example
+ * // Modulate CC 1 with sine wave
+ * ccv_pat(1, sine.range(0,127)).midicmd()
+ */
+export const ccv_pat = register('ccv_pat', (ccNum, valuePat) => valuePat.fmap((v) => `cc:${ccNum}:${Math.round(v)}`));
+
+/**
+ * Creates a program change command pattern from a value pattern
+ * @name prog_pat
+ * @param {Pattern} valuePat The pattern of program numbers to send
+ * @example
+ * // Change programs 1, 2, 3 in sequence
+ * prog_pat("1 2 3").midicmd()
+ */
+export const prog_pat = register('prog_pat', (valuePat) => valuePat.fmap((v) => `progNum:${Math.round(v)}`));
 
 export const getControlName = (alias) => {
   if (controlAlias.has(alias)) {

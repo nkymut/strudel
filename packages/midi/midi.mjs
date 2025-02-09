@@ -6,7 +6,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 import * as _WebMidi from 'webmidi';
 import { Pattern, getEventOffsetMs, isPattern, logger, ref } from '@strudel/core';
-import { noteToMidi, getControlName } from '@strudel/core';
+import { noteToMidi, getControlName, registerControl } from '@strudel/core';
 import { Note } from 'webmidi';
 
 // if you use WebMidi from outside of this package, make sure to import that instance:
@@ -100,10 +100,23 @@ export const midicontrolMap = new Map();
 function unifyMapping(mapping) {
   return Object.fromEntries(
     Object.entries(mapping).map(([key, mapping]) => {
+      // Convert number to object with ccn property
       if (typeof mapping === 'number') {
         mapping = { ccn: mapping };
       }
-      return [getControlName(key), mapping];
+
+      const controlName = getControlName(key);
+
+      // Register the control in the midicontrolMap if it doesn't exist in
+      if (!midicontrolMap.has(controlName)) {
+        try {
+          registerControl(controlName);
+        } catch (err) {
+          logger.error(`Failed to register control '${controlName}': ${err.message}`);
+          throw err;
+        }
+      }
+      return [controlName, mapping];
     }),
   );
 }
@@ -178,7 +191,10 @@ function normalize(value = 0, min = 0, max = 1, exp = 1) {
   normalized = Math.min(1, Math.max(0, normalized));
   return Math.pow(normalized, exp);
 }
+
 function mapCC(mapping, value) {
+  console.log('mapping', mapping);
+  console.log('value', value);
   return Object.keys(value)
     .filter((key) => !!mapping[getControlName(key)])
     .map((key) => {
@@ -318,14 +334,14 @@ Pattern.prototype.midi = function (output) {
       midicmd,
       midibend,
       miditouch,
+      midimap = 'default',
+      midiport = output,
       polyTouch, //??
       gain = 1,
       velocity = 0.9,
       progNum,
       sysexid,
       sysexdata,
-      midimap = 'default',
-      midiport = output,
     } = hap.value;
 
     const device = getDevice(midiport, WebMidi.outputs);
@@ -339,6 +355,7 @@ Pattern.prototype.midi = function (output) {
     velocity = gain * velocity;
     // if midimap is set, send a cc messages from defined controls
     if (midicontrolMap.has(midimap)) {
+      console.log('midimap', midimap);
       const ccs = mapCC(midicontrolMap.get(midimap), hap.value);
       ccs.forEach(({ ccn, ccv }) => sendCC(ccn, ccv, device, midichan, timeOffsetString));
     }

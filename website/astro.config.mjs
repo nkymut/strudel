@@ -8,6 +8,8 @@ import rehypeUrls from 'rehype-urls';
 
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
+import basicSsl from '@vitejs/plugin-basic-ssl';
+// import { visualizer } from 'rollup-plugin-visualizer';
 
 const site = `https:/nkymut.github.io`; // root url without a path
 const base = 'strudel/'; // base path of the strudel site

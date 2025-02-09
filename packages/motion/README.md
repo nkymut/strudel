@@ -8,29 +8,6 @@ This package adds device motion sensing functionality to strudel Patterns.
 npm i @strudel/motion --save
 ```
 
-## Setup SSL for Local Development
-`DeviceMotionEvent` only work over HTTPS, so you'll need to set up SSL for local development.
-install SSL plugin for Vite
-`pnpm install -D @vitejs/plugin-basic-ssl`
-
-add the basicSsl plugin to the defineConfig block in `strudel/website/astro.config.mjs`
-```
-vite: {
-  plugins: [basicSsl()],
-  server: {
-    host: '0.0.0.0', // Ensures it binds to all network interfaces
-    // https: { 
-    //   key: '../../key.pem', //
-    //   cert: '../../cert.pem',
-    // },
-  },
-},
-```
-
-generate SSL cert if its necessary
-
-`openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout key.pem -out cert.pem`
-
 ## Usage
 
 | Motion  | Long Names & Aliases | Description |
@@ -43,14 +20,14 @@ generate SSL cert if its necessary
 
 ## Example
 
-```
+```js
 enableMotion() //enable DeviceMotion 
 
-let tempo = 200
+setcpm(200/4)
 
 $_: accX.segment(16).gain().log()
 
-$:n("[0 1 3 1 5 4]/4")
+$:n("0 1 3 1 5 4")
   .scale("Bb:lydian")
   .sometimesBy(0.5,sub(note(12)))
   .lpf(gravityY.range(20,1000))
@@ -62,5 +39,34 @@ $:n("[0 1 3 1 5 4]/4")
   .delay(rotG.range(0,1))
   .decay(rotA.range(0,1))
   .attack(rotB.range(0,0.1))
-  .sound("sawtooth").cpm(tempo)
+  .sound("sawtooth")
 ```
+
+## Setup SSL for Local Development
+
+`DeviceMotionEvent` only works with HTTPS, so you'll need to enable SSL for local development.
+Try installing an SSL plugin for Vite.
+
+```sh
+cd website
+pnpm install -D @vitejs/plugin-basic-ssl
+```
+
+add the basicSsl plugin to the defineConfig block in `strudel/website/astro.config.mjs`
+
+```js
+vite: {
+  plugins: [basicSsl()],
+  server: {
+    host: '0.0.0.0', // Ensures it binds to all network interfaces
+    // https: { 
+    //   key: '../../key.pem', //
+    //   cert: '../../cert.pem',
+    // },
+  },
+},
+```
+
+generate an SSL certificate to avoid security warnings.
+
+`openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout key.pem -out cert.pem`

@@ -388,7 +388,7 @@ export class Pattern {
 
   polyJoin = function () {
     const pp = this;
-    return pp.fmap((p) => p.repeat(pp._steps.div(p._steps))).outerJoin();
+    return pp.fmap((p) => p.extend(pp._steps.div(p._steps))).outerJoin();
   };
 
   polyBind(func) {
@@ -1244,6 +1244,16 @@ export function reify(thing) {
   return pure(thing);
 }
 
+/** Takes a list of patterns, and returns a pattern of lists.
+ */
+export function sequenceP(pats) {
+  let result = pure([]);
+  for (const pat of pats) {
+    result = result.bind((list) => pat.fmap((v) => list.concat([v])));
+  }
+  return result;
+}
+
 /** The given items are played at the same time at the same length.
  *
  * @return {Pattern}
@@ -1820,7 +1830,10 @@ export const { fastGap, fastgap } = register(['fastGap', 'fastgap'], function (f
 export const focus = register('focus', function (b, e, pat) {
   b = Fraction(b);
   e = Fraction(e);
-  return pat._fast(Fraction(1).div(e.sub(b))).late(b.cyclePos());
+  return pat
+    ._early(b.sam())
+    ._fast(Fraction(1).div(e.sub(b)))
+    ._late(b);
 });
 
 export const { focusSpan, focusspan } = register(['focusSpan', 'focusspan'], function (span, pat) {
@@ -2845,16 +2858,16 @@ export const drop = stepRegister('drop', function (i, pat) {
 /**
  * *Experimental*
  *
- * `repeat` is similar to `fast` in that it 'speeds up' the pattern, but it also increases the step count
- * accordingly. So `stepcat("a b".repeat(2), "c d")` would be the same as `"a b a b c d"`, whereas
+ * `extend` is similar to `fast` in that it increases its density, but it also increases the step count
+ * accordingly. So `stepcat("a b".extend(2), "c d")` would be the same as `"a b a b c d"`, whereas
  * `stepcat("a b".fast(2), "c d")` would be the same as `"[a b] [a b] c d"`.
  * @example
  * stepcat(
- *   sound("bd bd - cp").repeat(2),
+ *   sound("bd bd - cp").extend(2),
  *   sound("bd - sd -")
  * ).pace(8)
  */
-export const repeat = stepRegister('repeat', function (factor, pat) {
+export const extend = stepRegister('extend', function (factor, pat) {
   return pat.fast(factor).expand(factor);
 });
 
@@ -3066,8 +3079,8 @@ export const s_sub = drop;
 Pattern.prototype.s_sub = Pattern.prototype.drop;
 export const s_expand = expand;
 Pattern.prototype.s_expand = Pattern.prototype.expand;
-export const s_extend = repeat;
-Pattern.prototype.s_extend = Pattern.prototype.repeat;
+export const s_extend = extend;
+Pattern.prototype.s_extend = Pattern.prototype.extend;
 export const s_contract = contract;
 Pattern.prototype.s_contract = Pattern.prototype.contract;
 export const s_tour = tour;

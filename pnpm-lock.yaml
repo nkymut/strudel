@@ -41,7 +41,7 @@ importers:
         version: 2.2.7
       '@vitest/coverage-v8':
         specifier: 3.0.4
-        version: 3.0.4(vitest@3.0.4(@types/debug@4.1.12)(@types/node@22.10.10)(@vitest/ui@3.0.4)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))
+        version: 3.0.4(vitest@3.0.4)
       '@vitest/ui':
         specifier: ^3.0.4
         version: 3.0.4(vitest@3.0.4)
@@ -154,12 +154,12 @@ importers:
 
   examples/tidal-repl:
     dependencies:
+      '@strudel/hs2js':
+        specifier: workspace:*
+        version: link:../../packages/hs2js
       '@strudel/web':
         specifier: workspace:*
         version: link:../../packages/web
-      hs2js:
-        specifier: workspace:*
-        version: link:../../packages/hs2js
     devDependencies:
       vite:
         specifier: ^6.0.11
@@ -472,16 +472,19 @@ importers:
       '@strudel/core':
         specifier: workspace:*
         version: link:../core
+      '@strudel/hs2js':
+        specifier: workspace:*
+        version: link:../hs2js
       '@strudel/mini':
         specifier: workspace:*
         version: link:../mini
-      hs2js:
-        specifier: workspace:*
-        version: link:../hs2js
     devDependencies:
       vite:
         specifier: ^6.0.11
         version: 6.0.11(@types/node@22.10.10)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0)
+      vitest:
+        specifier: ^3.0.4
+        version: 3.0.4(@types/debug@4.1.12)(@types/node@22.10.10)(@vitest/ui@3.0.4)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0)
 
   packages/tonal:
     dependencies:
@@ -643,6 +646,9 @@ importers:
       '@strudel/draw':
         specifier: workspace:*
         version: link:../packages/draw
+      '@strudel/hs2js':
+        specifier: workspace:*
+        version: link:../packages/hs2js
       '@strudel/hydra':
         specifier: workspace:*
         version: link:../packages/hydra
@@ -718,9 +724,6 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
-      hs2js:
-        specifier: 0.1.0
-        version: 0.1.0
       nanoid:
         specifier: ^5.0.9
         version: 5.0.9
@@ -4504,9 +4507,6 @@ packages:
     resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
     engines: {node: ^16.14.0 || >=18.0.0}
 
-  hs2js@0.1.0:
-    resolution: {integrity: sha512-THlUIMX8tZf6gtbz5RUZ8xQUyKJEItsx7bxEBcouFIEWjeo90376WMocj3JEz6qTv5nM+tjo3vNvLf89XruMvg==}
-
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
 
@@ -7446,9 +7446,6 @@ packages:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
     engines: {node: '>= 8'}
 
-  web-tree-sitter@0.20.8:
-    resolution: {integrity: sha512-weOVgZ3aAARgdnb220GqYuh7+rZU0Ka9k9yfKtGAzEYMa6GgiCzW9JjQRJyCJakvibQW+dfjJdihjInKuuCAUQ==}
-
   web-tree-sitter@0.24.7:
     resolution: {integrity: sha512-CdC/TqVFbXqR+C51v38hv6wOPatKEUGxa39scAeFSm98wIhZxAYonhRQPSMmfZ2w7JDI0zQDdzdmgtNk06/krQ==}
 
@@ -10235,7 +10232,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@3.0.4(vitest@3.0.4(@types/debug@4.1.12)(@types/node@22.10.10)(@vitest/ui@3.0.4)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(yaml@2.7.0))':
+  '@vitest/coverage-v8@3.0.4(vitest@3.0.4)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
@@ -12263,10 +12260,6 @@ snapshots:
   hosted-git-info@7.0.2:
     dependencies:
       lru-cache: 10.4.3
-
-  hs2js@0.1.0:
-    dependencies:
-      web-tree-sitter: 0.20.8
 
   html-escaper@2.0.2: {}
 
@@ -15827,8 +15820,6 @@ snapshots:
   web-namespaces@2.0.1: {}
 
   web-streams-polyfill@3.3.3: {}
-
-  web-tree-sitter@0.20.8: {}
 
   web-tree-sitter@0.24.7: {}
 

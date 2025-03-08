@@ -1,6 +1,6 @@
 import { reify } from '@strudel/core';
 import { m } from '@strudel/mini';
-import { loadParser, evaluate } from 'hs2js';
+import { loadParser, evaluate } from '@strudel/hs2js';
 
 function getInfixOperators() {
   let operators = {

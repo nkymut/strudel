@@ -28,7 +28,7 @@
   "homepage": "https://github.com/tidalcycles/strudel#readme",
   "dependencies": {
     "@strudel/web": "workspace:*",
-    "hs2js": "workspace:*"
+    "@strudel/hs2js": "workspace:*"
   },
   "devDependencies": {
     "vite": "^6.0.11"

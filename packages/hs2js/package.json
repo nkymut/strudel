@@ -1,5 +1,5 @@
 {
-  "name": "hs2js",
+  "name": "@strudel/hs2js",
   "version": "0.1.0",
   "description": "Experimental Haskell in JavaScript interpreter",
   "main": "src/index.mjs",
@@ -9,7 +9,7 @@
     "module": "dist/index.mjs"
   },
   "scripts": {
-    "build-wasm": "tree-sitter build-wasm node_modules/tree-sitter-haskell && mv tree-sitter-haskell.wasm ./dist/ && cp node_modules/web-tree-sitter/tree-sitter.wasm ./dist/",
+    "build-wasm": "npx tree-sitter build node_modules/tree-sitter-haskell && mv node_modules/tree-sitter-haskell/tree-sitter-haskell.wasm ./dist/",
     "build": "vite build && npm run build-wasm",
     "prepublishOnly": "npm run build"
   },

@@ -5,6 +5,7 @@ import remarkToc from 'remark-toc';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeUrls from 'rehype-urls';
+import bundleAudioWorkletPlugin from 'vite-plugin-bundle-audioworklet';
 
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
@@ -136,14 +137,6 @@ export default defineConfig({
   site,
   base,
   vite: {
-    //plugins: [basicSsl()],
-    server: {
-      host: '0.0.0.0', // Ensures it binds to all network interfaces
-      https: {
-        key: '../../key.pem',
-        cert: '../../cert.pem',
-      },
-    },
     ssr: {
       // Example: Force a broken package to skip SSR processing, if needed
       // external: ['fraction.js'], // https://github.com/infusion/Fraction.js/issues/51

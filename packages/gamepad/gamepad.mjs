@@ -2,10 +2,11 @@
 
 import { signal } from '@strudel/core';
 import { logger } from '@strudel/core';
+import { joycon } from './joycon.mjs';
 
 // Button mapping for Logitech Dual Action (STANDARD GAMEPAD Vendor: 046d Product: c216)
 
-const buttonMapSettings = {
+export const buttonMapSettings = {
   XBOX: {
     // XBOX mapping default
     a: 0,
@@ -18,6 +19,10 @@ const buttonMapSettings = {
     rt: 7,
     back: 8,
     start: 9,
+    lstick: 10,
+    rstick: 11,
+    ls: 10,
+    rs: 11,
     u: 12,
     up: 12,
     d: 13,
@@ -26,6 +31,7 @@ const buttonMapSettings = {
     left: 14,
     r: 15,
     right: 15,
+    xbox: 16,
   },
   NES: {
     // Nintendo mapping
@@ -33,12 +39,22 @@ const buttonMapSettings = {
     b: 0,
     x: 3,
     y: 2,
+    l: 4,
+    r: 5,
     lb: 4,
     rb: 5,
+    zl: 6,
+    zr: 7,
     lt: 6,
     rt: 7,
     back: 8,
+    minus: 8,
     start: 9,
+    plus: 9,
+    lstick: 10,
+    rstick: 11,
+    ls: 10,
+    rs: 11,
     u: 12,
     up: 12,
     d: 13,
@@ -47,6 +63,34 @@ const buttonMapSettings = {
     left: 14,
     r: 15,
     right: 15,
+    home: 16,
+    select: 17,
+  },
+  JOYCON: {
+    a: 0,
+    b: 1,
+    x: 2,
+    y: 3,
+    l: 4,
+    r: 5,
+    lb: 4,
+    rb: 5,
+    zl: 6,
+    zr: 7,
+    lt: 6,
+    rt: 7,
+    minus: 8,
+    plus: 9,
+    lstick: 10,
+    rstick: 11,
+    ls: 10,
+    rs: 11,
+    up: 12,
+    down: 13,
+    left: 14,
+    right: 15,
+    home: 16,
+    capture: 17
   },
 };
 
@@ -55,7 +99,7 @@ class ButtonSequenceDetector {
     this.sequence = [];
     this.timeWindow = timeWindow;
     this.lastInputTime = 0;
-    this.buttonStates = Array(16).fill(0); // Track previous state of each button
+    this.buttonStates = Array(Object.keys(mapping).length).fill(0); // Track previous state of each button
     this.buttonMap = mapping;
     // Button mapping for character inputs
   }
@@ -132,7 +176,7 @@ class GamepadHandler {
     this._mapping = mapping;
     this._activeGamepad = index; // Use provided index
     this._axes = [0, 0, 0, 0];
-    this._buttons = Array(16).fill(0);
+    this._buttons = Array(Object.keys(mapping).length).fill(0);
     this.setupEventListeners();
   }
 
@@ -197,8 +241,14 @@ export const listGamepads = () => {
 const gamepadStates = new Map();
 
 export const gamepad = (index = 0, mapping = 'XBOX') => {
+
   // list connected gamepads
   const connectedGamepads = listGamepads();
+
+  // If mapping is JOYCON, use the joycon() function instead
+  if (typeof mapping === 'string' && mapping.toUpperCase() === 'JOYCON') {
+    return joycon(index);
+  }
 
   // Check if the requested gamepad index exists
   const requestedGamepad = connectedGamepads.find((gp) => gp.index === index);
@@ -216,7 +266,7 @@ export const gamepad = (index = 0, mapping = 'XBOX') => {
   } else if (typeof mapping === 'object') {
     buttonMap = { ...buttonMapSettings.XBOX, ...mapping };
     // Check that all mapping values are valid button indices
-    const maxButtons = requestedGamepad.buttons; // Standard gamepad has 16 buttons
+    const maxButtons = requestedGamepad.buttons; 
     for (const [key, value] of Object.entries(mapping)) {
       if (typeof value !== 'number' || value < 0 || value >= maxButtons) {
         throw new Error(
@@ -262,7 +312,7 @@ export const gamepad = (index = 0, mapping = 'XBOX') => {
   axes.y2_2 = axes.y2.toBipolar();
 
   // Create button patterns
-  const buttons = Array(16)
+  const buttons = Array(Object.keys(buttonMap).length)
     .fill(null)
     .map((_, i) => {
       // Create unique key for this gamepad+button combination

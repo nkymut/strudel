@@ -90,7 +90,7 @@ export const buttonMapSettings = {
     left: 14,
     right: 15,
     home: 16,
-    capture: 17
+    capture: 17,
   },
 };
 
@@ -241,7 +241,6 @@ export const listGamepads = () => {
 const gamepadStates = new Map();
 
 export const gamepad = (index = 0, mapping = 'XBOX') => {
-
   // list connected gamepads
   const connectedGamepads = listGamepads();
 
@@ -266,7 +265,7 @@ export const gamepad = (index = 0, mapping = 'XBOX') => {
   } else if (typeof mapping === 'object') {
     buttonMap = { ...buttonMapSettings.XBOX, ...mapping };
     // Check that all mapping values are valid button indices
-    const maxButtons = requestedGamepad.buttons; 
+    const maxButtons = requestedGamepad.buttons;
     for (const [key, value] of Object.entries(mapping)) {
       if (typeof value !== 'number' || value < 0 || value >= maxButtons) {
         throw new Error(

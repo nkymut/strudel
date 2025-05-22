@@ -8,7 +8,7 @@ class JoyConHandler {
     this.connectedJoyCons = new Map();
     this._axes = [0, 0, 0, 0]; // [leftX, leftY, rightX, rightY]
     this._buttons = Array(18).fill(0);
-    this.GRAVITY = 9.81; 
+    this.GRAVITY = 9.81;
 
     this._batteryLevel = {
       level: 'unknown',
@@ -251,7 +251,7 @@ export const joycon = (index = 0) => {
   axes.x2_2 = axes.x2.toBipolar();
   axes.y2_2 = axes.y2.toBipolar();
 
-  // Create button patterns with toggle state 
+  // Create button patterns with toggle state
   const buttons = Array(18)
     .fill(null)
     .map((_, i) => {
@@ -302,7 +302,7 @@ export const joycon = (index = 0) => {
     orientationBeta: baseSignal.fmap((state) => state.orientation.beta),
     orientationGamma: baseSignal.fmap((state) => state.orientation.gamma),
     // Add Ring-Con
-    ringStrain: baseSignal.fmap((state) => state.ringcon.strain)
+    ringStrain: baseSignal.fmap((state) => state.ringcon.strain),
   };
 
   // Add accelerometer aliases
@@ -329,7 +329,7 @@ export const joycon = (index = 0) => {
   // Use shared JOYCON button mapping
   const buttonMap = buttonMapSettings.JOYCON;
 
-  // Return an object with all controls 
+  // Return an object with all controls
   return {
     ...axes,
     buttons,

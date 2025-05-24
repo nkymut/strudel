@@ -1,6 +1,6 @@
 {
   "name": "@strudel/webaudio",
-  "version": "1.1.0",
+  "version": "1.2.2",
   "description": "Web Audio helpers for Strudel",
   "main": "index.mjs",
   "type": "module",
@@ -38,6 +38,6 @@
     "superdough": "workspace:*"
   },
   "devDependencies": {
-    "vite": "^5.0.10"
+    "vite": "^6.0.11"
   }
 }

@@ -1,12 +1,12 @@
 import { evalScope, hash2code, logger } from '@strudel/core';
-import { settingPatterns, defaultAudioDeviceName } from '../settings.mjs';
-import { getAudioContext, initializeAudioOutput, setDefaultAudioContext, setVersionDefaults } from '@strudel/webaudio';
+import { settingPatterns } from '../settings.mjs';
+import { setVersionDefaults } from '@strudel/webaudio';
 import { getMetadata } from '../metadata_parser';
 import { isTauri } from '../tauri.mjs';
 import './Repl.css';
 import { createClient } from '@supabase/supabase-js';
 import { nanoid } from 'nanoid';
-import { writeText } from '@tauri-apps/api/clipboard';
+import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 import { $featuredPatterns, loadDBPatterns } from '@src/user_pattern_utils.mjs';
 
 // Create a single supabase client for interacting with your database
@@ -81,8 +81,10 @@ export function loadModules() {
     import('@strudel/soundfonts'),
     import('@strudel/csound'),
     import('@strudel/tidal'),
-    import('@strudel/motion'),
     import('@strudel/gamepad'),
+    import('@strudel/motion'),
+    import('@strudel/web'),
+    import('@strudel/mqtt'),
   ];
   if (isTauri()) {
     modules = modules.concat([
@@ -156,38 +158,6 @@ export const isUdels = () => {
     return false;
   }
   return window.top?.location?.pathname.includes('udels');
-};
-
-export const getAudioDevices = async () => {
-  await navigator.mediaDevices.getUserMedia({ audio: true });
-  let mediaDevices = await navigator.mediaDevices.enumerateDevices();
-  mediaDevices = mediaDevices.filter((device) => device.kind === 'audiooutput' && device.deviceId !== 'default');
-  const devicesMap = new Map();
-  devicesMap.set(defaultAudioDeviceName, '');
-  mediaDevices.forEach((device) => {
-    devicesMap.set(device.label, device.deviceId);
-  });
-  return devicesMap;
-};
-
-export const setAudioDevice = async (id) => {
-  let audioCtx = getAudioContext();
-  if (audioCtx.sinkId === id) {
-    return;
-  }
-  await audioCtx.suspend();
-  await audioCtx.close();
-  audioCtx = setDefaultAudioContext();
-  await audioCtx.resume();
-  const isValidID = (id ?? '').length > 0;
-  if (isValidID) {
-    try {
-      await audioCtx.setSinkId(id);
-    } catch {
-      logger('failed to set audio interface', 'warning');
-    }
-  }
-  initializeAudioOutput();
 };
 
 export function setVersionDefaultsFrom(code) {

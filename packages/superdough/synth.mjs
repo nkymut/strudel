@@ -1,5 +1,5 @@
 import { clamp, midiToFreq, noteToMidi } from './util.mjs';
-import { registerSound, getAudioContext } from './superdough.mjs';
+import { registerSound, getAudioContext, getLfo } from './superdough.mjs';
 import {
   applyFM,
   gainNode,
@@ -25,6 +25,13 @@ const getFrequencyFromValue = (value) => {
 
   return Number(freq);
 };
+function destroyAudioWorkletNode(node) {
+  if (node == null) {
+    return;
+  }
+  node.disconnect();
+  node.parameters.get('end')?.setValueAtTime(0, 0);
+}
 
 const waveforms = ['triangle', 'square', 'sawtooth', 'sine'];
 const noises = ['pink', 'white', 'brown', 'crackle'];
@@ -63,7 +70,9 @@ export function registerSynthSounds() {
         stop(envEnd);
         return {
           node,
-          stop: (releaseTime) => {},
+          stop: (endTime) => {
+            stop(endTime);
+          },
         };
       },
       { type: 'synth', prebake: true },
@@ -110,10 +119,12 @@ export function registerSynthSounds() {
       let envGain = gainNode(1);
       envGain = o.connect(envGain);
 
-      webAudioTimeout(
+      getParamADSR(envGain.gain, attack, decay, sustain, release, 0, 0.3 * gainAdjustment, begin, holdend, 'linear');
+
+      let timeoutNode = webAudioTimeout(
         ac,
         () => {
-          o.disconnect();
+          destroyAudioWorkletNode(o);
           envGain.disconnect();
           onended();
           fm?.stop();
@@ -123,11 +134,88 @@ export function registerSynthSounds() {
         end,
       );
 
-      getParamADSR(envGain.gain, attack, decay, sustain, release, 0, 0.3 * gainAdjustment, begin, holdend, 'linear');
+      return {
+        node: envGain,
+        stop: (time) => {
+          timeoutNode.stop(time);
+        },
+      };
+    },
+    { prebake: true, type: 'synth' },
+  );
+
+  registerSound(
+    'pulse',
+    (begin, value, onended) => {
+      const ac = getAudioContext();
+      let { pwrate, pwsweep } = value;
+      if (pwsweep == null) {
+        if (pwrate != null) {
+          pwsweep = 0.3;
+        } else {
+          pwsweep = 0;
+        }
+      }
+
+      if (pwrate == null && pwsweep != null) {
+        pwrate = 1;
+      }
+
+      let { duration, pw: pulsewidth = 0.5 } = value;
+      const frequency = getFrequencyFromValue(value);
+
+      const [attack, decay, sustain, release] = getADSRValues(
+        [value.attack, value.decay, value.sustain, value.release],
+        'linear',
+        [0.001, 0.05, 0.6, 0.01],
+      );
+      const holdend = begin + duration;
+      const end = holdend + release + 0.01;
+      let o = getWorklet(
+        ac,
+        'pulse-oscillator',
+        {
+          frequency,
+          begin,
+          end,
+          pulsewidth,
+        },
+        {
+          outputChannelCount: [2],
+        },
+      );
+
+      getPitchEnvelope(o.parameters.get('detune'), value, begin, holdend);
+      const vibratoOscillator = getVibratoOscillator(o.parameters.get('detune'), value, begin);
+      const fm = applyFM(o.parameters.get('frequency'), value, begin);
+      let envGain = gainNode(1);
+      envGain = o.connect(envGain);
+
+      getParamADSR(envGain.gain, attack, decay, sustain, release, 0, 1, begin, holdend, 'linear');
+      let lfo;
+      if (pwsweep != 0) {
+        lfo = getLfo(ac, begin, end, { frequency: pwrate, depth: pwsweep });
+        lfo.connect(o.parameters.get('pulsewidth'));
+      }
+      let timeoutNode = webAudioTimeout(
+        ac,
+        () => {
+          destroyAudioWorkletNode(o);
+          destroyAudioWorkletNode(lfo);
+          envGain.disconnect();
+          onended();
+          fm?.stop();
+          vibratoOscillator?.stop();
+        },
+        begin,
+        end,
+      );
 
       return {
         node: envGain,
-        stop: (time) => {},
+        stop: (time) => {
+          timeoutNode.stop(time);
+        },
       };
     },
     { prebake: true, type: 'synth' },
@@ -170,7 +258,9 @@ export function registerSynthSounds() {
         stop(envEnd);
         return {
           node,
-          stop: (releaseTime) => {},
+          stop: (endTime) => {
+            stop(endTime);
+          },
         };
       },
       { type: 'synth', prebake: true },

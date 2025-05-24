@@ -1,6 +1,6 @@
 {
   "name": "@strudel/web",
-  "version": "1.1.0",
+  "version": "1.2.2",
   "description": "Easy to setup, opiniated bundle of Strudel for the browser.",
   "module": "web.mjs",
   "publishConfig": {
@@ -40,7 +40,8 @@
     "@strudel/webaudio": "workspace:*"
   },
   "devDependencies": {
-    "@rollup/plugin-replace": "^5.0.5",
-    "vite": "^5.0.10"
+    "@rollup/plugin-replace": "^6.0.2",
+    "vite": "^6.0.11",
+    "vite-plugin-bundle-audioworklet": "workspace:*"
   }
 }

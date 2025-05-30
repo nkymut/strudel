@@ -83,7 +83,6 @@ export function loadModules() {
     import('@strudel/tidal'),
     import('@strudel/gamepad'),
     import('@strudel/motion'),
-    import('@strudel/web'),
     import('@strudel/mqtt'),
   ];
   if (isTauri()) {

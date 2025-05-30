@@ -67,6 +67,7 @@ export function initEditor({ initialCode = '', onChange, onEvaluate, onStop, roo
   const initialSettings = Object.keys(compartments).map((key) =>
     compartments[key].of(extensions[key](parseBooleans(settings[key]))),
   );
+
   initTheme(settings.theme);
   let state = EditorState.create({
     doc: initialCode,
@@ -186,6 +187,7 @@ export class StrudelMirror {
         this.widgets = options.meta?.widgets;
         const sliders = this.widgets.filter((w) => w.type === 'slider');
         updateSliderWidgets(this.editor, sliders);
+        console.log('sliders', sliders);
         const widgets = this.widgets.filter((w) => w.type !== 'slider');
         updateWidgets(this.editor, widgets);
         updateMiniLocations(this.editor, this.miniLocations);

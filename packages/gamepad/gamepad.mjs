@@ -39,8 +39,6 @@ export const buttonMapSettings = {
     b: 0,
     x: 3,
     y: 2,
-    l: 4,
-    r: 5,
     lb: 4,
     rb: 5,
     zl: 6,

@@ -20,6 +20,14 @@ const skippedExamples = [
   'accelerationX',
   'defaultmidimap',
   'midimaps',
+  'vibrate',
+  'vibGamepadIndex',
+  'vibGamepadId',
+  'vibEnable',
+  'vibWeak',
+  'vibStrong',
+  'vibDuration',
+  'vibIntensity',
 ];
 
 describe('runs examples', () => {

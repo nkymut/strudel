@@ -1,7 +1,7 @@
 // @strudel/gamepad/index.mjs
 
-import { signal } from '@strudel/core';
-import { logger } from '@strudel/core';
+import { signal, Pattern, logger, registerControl, register, isPattern } from '@strudel/core';
+import { vibrationSupported, getGamepadVibrationActuator } from './vibration.mjs';
 import { joycon } from './joycon.mjs';
 
 // Button mapping for Logitech Dual Action (STANDARD GAMEPAD Vendor: 046d Product: c216)
@@ -69,8 +69,6 @@ export const buttonMapSettings = {
     b: 1,
     x: 2,
     y: 3,
-    l: 4,
-    r: 5,
     lb: 4,
     rb: 5,
     zl: 6,
@@ -85,10 +83,16 @@ export const buttonMapSettings = {
     rs: 11,
     up: 12,
     down: 13,
+    u: 12,
+    d: 13,
+    l: 14,
     left: 14,
+    r: 15,
     right: 15,
     home: 16,
     capture: 17,
+    home: 16,
+    select: 17,
   },
 };
 
@@ -97,6 +101,7 @@ class ButtonSequenceDetector {
     this.sequence = [];
     this.timeWindow = timeWindow;
     this.lastInputTime = 0;
+    this.buttonStates = Array(Object.keys(mapping).length).fill(0); // Track previous state of each button
     this.buttonStates = Array(Object.keys(mapping).length).fill(0); // Track previous state of each button
     this.buttonMap = mapping;
     // Button mapping for character inputs
@@ -353,8 +358,16 @@ export const gamepad = (index = 0, mapping = 'XBOX') => {
   const btnseq = btnSequence;
   const seq = btnSequence;
 
+  // Create vibration pattern
+  const vibration = (pattern) => {
+    return signal(() => {
+      // Return vibration enable/disable pattern
+      return pattern;
+    });
+  };
+
   logger(
-    `[gamepad] connected to gamepad ${index} (${requestedGamepad.id}) with ${typeof mapping === 'object' ? 'custom' : mapping} mapping`,
+    `[gamepad] connected to gamepad ${index} (${requestedGamepad.id}) with ${typeof mapping === 'object' ? 'custom' : mapping} mapping${vibrationSupported(index) ? ' (vibration supported)' : ''}`,
   );
 
   // Return an object with all controls
@@ -375,6 +388,7 @@ export const gamepad = (index = 0, mapping = 'XBOX') => {
     btnSeq,
     btnseq,
     seq,
+    vibration,
     raw: baseSignal,
   };
 };

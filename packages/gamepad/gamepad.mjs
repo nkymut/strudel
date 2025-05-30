@@ -91,7 +91,6 @@ export const buttonMapSettings = {
     right: 15,
     home: 16,
     capture: 17,
-    home: 16,
     select: 17,
   },
 };

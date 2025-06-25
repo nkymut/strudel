@@ -7,7 +7,7 @@ import './Repl.css';
 import { createClient } from '@supabase/supabase-js';
 import { nanoid } from 'nanoid';
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
-import { $featuredPatterns , loadDBPatterns  } from '@src/user_pattern_utils.mjs';
+import { $featuredPatterns, loadDBPatterns } from '@src/user_pattern_utils.mjs';
 
 // Create a single supabase client for interacting with your database
 // export const supabase = createClient(
@@ -17,13 +17,13 @@ import { $featuredPatterns , loadDBPatterns  } from '@src/user_pattern_utils.mjs
 
 export const supabase = createClient(
   'https://pidxdsxphlhzjnzmifth.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtcXZmcnRhaWh5cGNwYnR0cGdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4NjYzMTYsImV4cCI6MjA0ODQ0MjMxNn0.NWiBINc4g2y9mZKQFvZ0YQSa5i8_HbxADhqI3C_0tcs');
-
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtcXZmcnRhaWh5cGNwYnR0cGdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4NjYzMTYsImV4cCI6MjA0ODQ0MjMxNn0.NWiBINc4g2y9mZKQFvZ0YQSa5i8_HbxADhqI3C_0tcs',
+);
 
 let dbLoaded;
 if (typeof window !== 'undefined') {
   dbLoaded = loadDBPatterns();
-} 
+}
 
 export async function initCode() {
   // load code from url hash (either short hash from database or decode long hash)
@@ -114,7 +114,6 @@ export function confirmDialog(msg) {
 }
 
 let lastShared;
-
 
 export async function shareCode(codeToShare) {
   // const codeToShare = activeCode || code;

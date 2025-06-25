@@ -16,7 +16,7 @@ import { $featuredPatterns, loadDBPatterns } from '@src/user_pattern_utils.mjs';
 // );
 
 export const supabase = createClient(
-  'https://pidxdsxphlhzjnzmifth.supabase.co',
+  'https://bmqvfrtaihypcpbttpgj.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtcXZmcnRhaWh5cGNwYnR0cGdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4NjYzMTYsImV4cCI6MjA0ODQ0MjMxNn0.NWiBINc4g2y9mZKQFvZ0YQSa5i8_HbxADhqI3C_0tcs',
 );
 

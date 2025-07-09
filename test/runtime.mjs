@@ -97,6 +97,7 @@ const toneHelpersMocked = {
   '_pianoroll',
   '_spectrum',
   'markcss',
+  'p',
 ].forEach((mock) => {
   strudel.Pattern.prototype[mock] = function () {
     return this;
@@ -164,6 +165,7 @@ evalScope(
     loadCsound,
     loadcsound,
     setcps: id,
+    setcpm: id,
     Clock: {}, // whatever
   },
 );

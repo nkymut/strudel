@@ -7,7 +7,7 @@ import './Repl.css';
 import { createClient } from '@supabase/supabase-js';
 import { nanoid } from 'nanoid';
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
-import { $featuredPatterns, loadDBPatterns } from '@src/user_pattern_utils.mjs';
+import { $featuredPatterns /* , loadDBPatterns */ } from '@src/user_pattern_utils.mjs';
 
 // Create a single supabase client for interacting with your database
 // export const supabase = createClient(
@@ -21,9 +21,9 @@ export const supabase = createClient(
 );
 
 let dbLoaded;
-if (typeof window !== 'undefined') {
+/* if (typeof window !== 'undefined') {
   dbLoaded = loadDBPatterns();
-}
+} */
 
 export async function initCode() {
   // load code from url hash (either short hash from database or decode long hash)
@@ -89,6 +89,7 @@ export function loadModules() {
     import('@strudel/gamepad'),
     import('@strudel/motion'),
     import('@strudel/mqtt'),
+    import('@strudel/mondo'),
   ];
   if (isTauri()) {
     modules = modules.concat([
@@ -125,6 +126,11 @@ export async function shareCode(codeToShare) {
   confirmDialog(
     'Do you want your pattern to be public? If no, press cancel and you will get just a private link.',
   ).then(async (isPublic) => {
+    if (lastShared === codeToShare) {
+      logger(`Link already generated!`, 'error');
+      return;
+    }
+
     const hash = nanoid(12);
     const shareUrl = window.location.origin + window.location.pathname + '?' + hash;
     const { error } = await supabase.from('code_v1').insert([{ code: codeToShare, hash, ['public']: isPublic }]);
@@ -148,7 +154,6 @@ export async function shareCode(codeToShare) {
     }
   });
 }
-
 // export async function shareCode() {
 //   try {
 //     const shareUrl = window.location.href;

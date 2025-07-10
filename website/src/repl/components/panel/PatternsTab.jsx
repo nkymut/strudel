@@ -142,7 +142,7 @@ function UserPatterns({ context }) {
       </div>
 
       <div className="overflow-auto h-full bg-background p-2 rounded-md">
-        {/* {patternFilter === patternFilterName.user && ( */}
+        {patternFilter === patternFilterName.user && ( 
         <PatternButtons
           onClick={(id) =>
             updateCodeWindow(
@@ -156,7 +156,7 @@ function UserPatterns({ context }) {
           activePattern={activePattern}
           viewingPatternID={viewingPatternID}
         />
-        {/* )} */}
+         )}
       </div>
     </div>
   );
@@ -249,12 +249,12 @@ function PublicPatterns({ context }) {
 export function PatternsTab({ context }) {
   const { patternFilter } = useSettings();
 
+  // return (
+  //   <div className="px-4 w-full text-foreground  space-y-2  flex flex-col overflow-hidden max-h-full h-full">
+  //     <UserPatterns context={context} />
+  //   </div>
+  // );
   return (
-    <div className="px-4 w-full text-foreground  space-y-2  flex flex-col overflow-hidden max-h-full h-full">
-      <UserPatterns context={context} />
-    </div>
-  );
-  /* return (
     <div className="px-4 w-full text-foreground  space-y-2  flex flex-col overflow-hidden max-h-full h-full">
       <ButtonGroup
         value={patternFilter}
@@ -268,5 +268,5 @@ export function PatternsTab({ context }) {
         <PublicPatterns context={context} />
       )}
     </div>
-  ); */
+  ); 
 }

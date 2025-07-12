@@ -320,6 +320,12 @@ importers:
 
   packages/midi:
     dependencies:
+      '@codemirror/state':
+        specifier: ^6.5.1
+        version: 6.5.1
+      '@codemirror/view':
+        specifier: ^6.36.2
+        version: 6.36.2
       '@strudel/core':
         specifier: workspace:*
         version: link:../core
